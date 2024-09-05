@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 void main() {
 	srand(time(NULL));
 	//1 задание
@@ -17,4 +19,12 @@ void main() {
 	}
 	printf("\nDifference between max and min: %d\n\n", max - min);
 
+	//2 задание 
+	printf("---|2nd task|-------------------------- \n");
+	printf("Array: ");
+	int arr2[10];
+	for (int i = 0; i < 10; i++) {
+		arr2[i] = rand() % 100 - 50;
+		printf("%d ", arr2[i]);
+	}
 }
