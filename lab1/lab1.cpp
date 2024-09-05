@@ -3,6 +3,7 @@
 #include <time.h>
 #include <malloc.h>
 
+bool strEqual(char str1[20],char str2[20]);
 void main() {
 	srand(time(NULL));
 	//1 задание
@@ -72,4 +73,79 @@ void main() {
 		sum = 0;
 	}
 	printf("  %d\n", sum2);
+
+	//5 задание
+	printf("\n\n---|5th task|-------------------------- \n");
+	int choice = 0;
+	char temp[20];
+	int crsNum = 0;
+	struct student
+	{
+		char secondName[20];
+		char firstName[20];
+		char thirdName[20];
+		char faculty[20];
+		int course;
+	};
+	struct student students[5] = {  "Monin\0","Ivan\0","Alekseevich\0","FVT\0",2,
+									"Kokarev\0","Danila\0","Sergeevich\0","FVT\0",2,
+									"Konkin\0","Dmitriy\0","Stanislavovich\0","FVT\0",2,
+									"Ivanov\0","Ivan\0","Alekseevich\0","Econom\0",1,
+									"Ivanov\0","Danila\0","Petrovich\0","FVT\0",4 };
+	printf("SecondName   FirstName   ThirdName   Faculty   Course\n");
+	for (int i = 0; i < 5; i++) {
+		printf("%8s %11s %15s %4s %8d\n", students[i].secondName, students[i].firstName, students[i].thirdName, students[i].faculty, students[i].course);
+	}
+	printf("\n\nTap requiring number\nSearching by: \n");
+	printf("Second name - 1\nFirst name - 2\nFaculty - 3\nCourse - 4\n");
+	scanf_s("%d", &choice);
+	switch (choice) {
+		case 1:
+			printf("Write down Second name: ");
+			getchar();
+			fgets(temp,20,stdin);
+			for (int i = 0; i < 5; i++) {
+				if (strEqual(temp,students[i].secondName)) {
+					printf("%8s %11s %15s %4s %8d\n", students[i].secondName, students[i].firstName, students[i].thirdName, students[i].faculty, students[i].course);
+				}
+			}
+			break;
+		case 2:
+			printf("Write down First name: ");
+			getchar();
+			fgets(temp, 20, stdin);
+			for (int i = 0; i < 5; i++) {
+				if (strEqual(temp, students[i].firstName)) {
+					printf("%8s %11s %15s %4s %8d\n", students[i].secondName, students[i].firstName, students[i].thirdName, students[i].faculty, students[i].course);
+				}
+			}
+			break;
+		case 3:
+			printf("Write down Faculty: ");
+			getchar();
+			fgets(temp, 20, stdin);
+			for (int i = 0; i < 5; i++) {
+				if (strEqual(temp, students[i].faculty)) {
+					printf("%8s %11s %15s %4s %8d\n", students[i].secondName, students[i].firstName, students[i].thirdName, students[i].faculty, students[i].course);
+				}
+			}
+			break;
+		case 4:
+			printf("Write down Course: ");
+			scanf_s("%d", &crsNum);
+			for (int i = 0; i < 5; i++) {
+				if (crsNum == students[i].course) {
+					printf("%8s %11s %15s %4s %8d\n", students[i].secondName, students[i].firstName, students[i].thirdName, students[i].faculty, students[i].course);
+				}
+			}
+			break;
+	}
+}
+
+bool strEqual(char str1[20], char str2[20]) {
+	for (int i = 0; i < 20; i++) {
+		if (str1[i] == '\n' && str2[i] == '\0') return true;
+		if (str1[i] != str2[i]) return false;
+	}
+	return true;
 }
