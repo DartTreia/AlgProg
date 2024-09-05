@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <malloc.h>
 void main() {
 	srand(time(NULL));
 	//1 задание
@@ -26,5 +27,19 @@ void main() {
 	for (int i = 0; i < 10; i++) {
 		arr2[i] = rand() % 100 - 50;
 		printf("%d ", arr2[i]);
+	}
+
+	//3 задание
+        printf("\n\n---|3rd task|-------------------------- \n");
+	int* arr3;
+	int sizeArr3;
+	printf("Enter array's size: ");
+	scanf_s("%d", &sizeArr3);
+
+	arr3 = (int*)malloc(sizeArr3 * sizeof(int));
+	for (int i = 0; i < sizeArr3; i++) {
+		*arr3 = rand() % 100 - 50;
+		printf("%d ", *arr3);
+		arr3++;
 	}
 }
