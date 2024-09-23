@@ -39,18 +39,18 @@ node* find(char* color, node* head) {
     }
     return returningList;
 }
-void deleteElem(node* head,node* elems) {
-    struct node* tempHead = head;
+void deleteElem(node** head,node* elems) {
+    struct node* tempHead = *head;
     while (elems != NULL) {
         while (tempHead != NULL) {
             if (strcmp(tempHead->color, elems->color)==0) {
-                if (tempHead == head) {
+                if (tempHead == *head) {
                     if (tempHead->next != NULL) {
-                        head = tempHead->next;
-                        head->last = NULL;
+                        *head = tempHead->next;
+                        (*head)->last = NULL;
                     }
                     else {
-                        head = NULL;
+                        *head = NULL;
                         break;
                     }
                 }
@@ -139,8 +139,7 @@ void displayMenu(node* head) {
     switch (choice) {
     case(1):
         int count;
-
-        printf("How many colors do u want to add?");
+        printf("How many colors do u want to add? ");
         scanf("%d", &count);
 
         for (int i = 0; i < count; i++) {
@@ -180,7 +179,7 @@ void displayMenu(node* head) {
         printf("\nWhich color do u want to delete? ");
         scanf("%s", color);
         findedElms = find(color, head);
-        deleteElem(head, findedElms);
+        deleteElem(&head, findedElms);
         printf("\nTap some button to return to main menu...");
         getchar();
         system("cls");
