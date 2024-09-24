@@ -47,10 +47,10 @@ void deleteElem(Stack* q) {
 }
 
 void displayElems(Stack* q) {
-    Node* tmp = q->head;
+    Node* tmp = q->tail;
     while (tmp) {
-        printf("%s  ", tmp->name);
-        tmp = tmp->next;
+        printf("%s  \n", tmp->name);
+        tmp = tmp->prev;
     }
 }
 
