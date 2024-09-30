@@ -117,6 +117,7 @@ void displayMenu(Tree* root) {
         }
         printf("\nTap some button to return to main menu...");
         getchar();
+        getchar();
         system("cls");
         displayMenu(root);
         break;
@@ -133,6 +134,7 @@ void displayMenu(Tree* root) {
             else addSpecialElem(root, data);
         }
         printf("\nTap some button to return to main menu...");
+        getchar();
         getchar();
         system("cls");
         displayMenu(root);
