@@ -56,6 +56,16 @@ int find(Tree* root, int data,int count) {
     count =find(root->left, data, count);
     return count;
 }
+int calcDiff(Tree* root, int data, int count) {
+    if (root == NULL) {
+        return count;
+    }
+    count++;
+    if (root->data == data) printf("The difficult of find function for the value %d is O(%d)..\n", data, count);
+    count = calcDiff(root->right, data, count);
+    count = calcDiff(root->left, data, count);
+    return count;
+}
 Tree* addSpecialElem(Tree* root, int data) {
     if (find(root, data, 0) != 0) {
         printf("This element already exists, choose another\n");
@@ -89,7 +99,7 @@ void displayMenu(Tree* root) {
     printf("2. Add special elements\n");
     printf("3. Display elements\n");
     printf("4. Find elements\n");
-
+    printf("5. Calculate difficult of find function by value\n");
     int choice;
     scanf("%d", &choice);
     system("cls");
@@ -140,6 +150,16 @@ void displayMenu(Tree* root) {
         scanf("%d", &data);
         count = find(root, data, 0);
         printf("There are only %d elements in the tree..\n", count);
+        printf("Tap some button to return to main menu...");
+        getchar();
+        getchar();
+        system("cls");
+        displayMenu(root);
+        break;
+    case(5):
+        printf("What element do u want to find? ");
+        scanf("%d", &data);
+        count = calcDiff(root, data, 0);
         printf("Tap some button to return to main menu...");
         getchar();
         getchar();
