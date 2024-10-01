@@ -97,7 +97,7 @@ int calcDiff(Tree* root, int data, int count) {
         return count;
     }
     count++;
-    if (root->data == data) printf("The difficult of find function for the value %d is O(%d)..\n", data, count);
+    if (root->data == data) printf("The difficult of find function for the value %d is O(2^%d)..\n", data, count);
     count = calcDiff(root->right, data, count);
     count = calcDiff(root->left, data, count);
     return count;
