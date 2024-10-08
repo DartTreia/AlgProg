@@ -50,7 +50,7 @@ void main() {
 				else matrix[j][i] = 0;
 			}
 			if (j == 4 && maxOne == 1) matrix[j][i] = 1;
-			if (matrix[i][j] == 1) {
+			if (matrix[j][i] == 1) {
 				matrixSize++;
 			}
 		}
