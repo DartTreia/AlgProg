@@ -1,4 +1,4 @@
-import java.sql.SQLOutput;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main{
@@ -11,7 +11,7 @@ public class Main{
             }
         }
     }
-    public static void printMatrix(int arr1[][],int arr2[][]){
+    public static void printMatrixes(int arr1[][],int arr2[][]){
         System.out.print("M1 ");
         for (int i = 0; i < arr1.length; i++) {
             System.out.print("x"+(i+1)+" ");
@@ -32,13 +32,52 @@ public class Main{
         }
         System.out.println();
     }
+    public static void fillGraph(Verticle[] graph,int arr[][]){
+       for(int i = 0; i < graph.length; i++){
+           graph[i]=new Verticle("x"+(i+1),null);
+       }
+       for(int i = 0; i < arr.length; i++){
+           for(int j = 0; j < arr.length; j++){
+               if(arr[i][j]==1){
+                   int k=1;
+                   if(graph[i].getAdjVerticles()!=null)
+                   k=1+graph[i].getAdjVerticles().length; // размер массива смежных вершин
+                   Verticle[] tmp = new Verticle[k];
+                   if(graph[i].getAdjVerticles()!=null)
+                   tmp=Arrays.copyOf(graph[i].getAdjVerticles(), k);
+                   tmp[tmp.length-1]=graph[j];
+                   graph[i].setAdjVerticles(tmp);
+               }
+           }
+       }
+    }
+    public static void printGraph(Verticle[] graph){
+        for(int i = 0; i < graph.length; i++){
+            System.out.print(graph[i].getVertex()+": ");
+            if(graph[i].getAdjVerticles()!=null)
+            Arrays.stream(graph[i].getAdjVerticles()).forEach(n -> System.out.print(n.getVertex()+" "));
+            else{
+                System.out.print(" none ");
+            }
+            System.out.println();
+        }
+    }
     static Scanner sc = new Scanner(System.in);
+
     public static void main(String[] args) {
         int n=sc.nextInt();
         int[][] M1 = new int[n][n];
         int[][] M2 = new int[n][n];
         createMatrix(M1);
         createMatrix(M2);
-        printMatrix(M1,M2);
+        printMatrixes(M1,M2);
+        Verticle[] G1 = new Verticle[n];
+        Verticle[] G2 = new Verticle[n];
+        fillGraph(G1,M1);
+        fillGraph(G2,M2);
+        System.out.println("G1");
+        printGraph(G1);
+        System.out.println("G2");
+        printGraph(G2);
     }
 }
