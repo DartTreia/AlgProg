@@ -9,7 +9,7 @@ public class Vertex {
         this.vertex = vertex;
         this.next = next;
         this.adjVertexes = adjVertexes;
-        if(vertex.equals("start"))
+        if(vertex.equals("start") && M!=null)
             fillGraph(M);
     }
     private static Vertex findVertex(Vertex G,String name){
@@ -339,7 +339,59 @@ private void fillGraph(Matrix M){
         return true;
     }
 
+    public static Vertex decMulti(Vertex G1,Vertex G2){
+        if(G1.next==null || G2.next==null){return null;}
+        int count1=0;
+        Vertex tmp = G1.next;
+        while(tmp!=null){
+            count1++;
+            tmp=tmp.next;
+        }
+        tmp=G2.next;
+        int count2=0;
+        while(tmp!=null){
+            count2++;
+            tmp=tmp.next;
+        }
 
+        Vertex newVert=new Vertex("start",null,null,null);
+        Vertex tmp2=newVert;
+        Vertex last = null;
+        for(int i=0;i<Math.min(count1,count2);i++) {
+            if (count1 > count2) tmp = G1.next;
+            else tmp = G2.next;
+
+            while (tmp != null) {
+                Vertex[] newAdj=tmp.adjVertexes;
+                if(last!=null) {
+                    int k=1;
+                    if(newAdj!=null)
+                        k+=newAdj.length;
+                    newAdj = new Vertex[k];
+                    if(tmp.adjVertexes!=null) newAdj = Arrays.copyOf(tmp.adjVertexes, k);
+                    newAdj[k-1] = last;
+                }
+                Vertex temp = Vertex.addVertex(newVert, tmp.vertex+(i+1), newAdj);
+                if(last!=null){
+                    int k=1;
+                    if(last.adjVertexes!=null)
+                        k+=last.adjVertexes.length;
+                    newAdj = new Vertex[k];
+                    if(last.adjVertexes!=null) newAdj = Arrays.copyOf(last.adjVertexes, k);
+                    newAdj[k-1] = temp;
+                    last.adjVertexes = newAdj;
+                    last=last.next;
+                }
+                tmp = tmp.next;
+            }
+            tmp2=tmp2.next;
+            last=tmp2;
+            while(tmp2.next!=null){
+                tmp2=tmp2.next;
+            }
+        }
+        return newVert;
+    }
 
     public String getVertex() {
         return vertex;
