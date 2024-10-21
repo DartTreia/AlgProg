@@ -65,6 +65,31 @@ public class Matrix {
         }
         System.out.println();
     }
+
+    public static void printMatrix(Matrix M, Vertex G){
+        if(M==null || M.size<=0){
+            System.out.println("Matrix is empty");
+            return;
+        }
+        System.out.print("M  ");
+        Vertex tmp1=G;
+        tmp1=tmp1.getNext();
+        while(tmp1!=null){
+            System.out.print(tmp1.getVertex()+" ");
+            tmp1=tmp1.getNext();
+        }
+        tmp1=G;
+        tmp1=tmp1.getNext();
+        for (int i = 0; i < M.size; i++) {
+            System.out.print("\n"+tmp1.getVertex()+"  ");
+            tmp1=tmp1.getNext();
+            for (int j = 0; j < M.size; j++) {
+                System.out.print(M.matrix[i][j]+"  ");
+            }
+        }
+        System.out.println();
+    }
+
     public static void deleteVertInMx(Matrix M,int value){
         int[][] tmp = new int[M.getMatrix().length-1][M.getMatrix()[0].length-1];
         int x=0;
@@ -120,9 +145,95 @@ public class Matrix {
                 nxt = nxt.getNext();
             }
         }
-        M.setMatrix(tmp2);
+        M.size++;
+        M.matrix = tmp2;
+    }
+    public static Matrix mergeMatrixes(Matrix M1,Matrix M2,Vertex G1,Vertex G2){
+        if(M1.size!=M2.size) return null;
+        Vertex tmp1=G1;
+        int k=0;
+        for(int i=0;i<M1.size;i++){
+            Vertex tmp2=G2;
+            for (int j = 0; j < M1.size; j++) {
+                if(tmp1.getVertex().equals(tmp2.getVertex())){
+                    k++;
+                }
+                tmp2=tmp2.getNext();
+            }
+            tmp1=tmp1.getNext();
+        }
+        if(k!=M1.size) return null;
+        Matrix newM = new Matrix(Math.max(M1.size,M2.size));
+        for (int i = 0; i < M1.size; i++) {
+            for (int j = 0; j < M1.size; j++) {
+                newM.matrix[i][j]=M1.matrix[i][j] | M2.matrix[i][j];
+            }
+        }
+        return newM;
+    }
+    public static Matrix intersectionMatrixes(Matrix M1,Matrix M2,Vertex G1,Vertex G2){
+        if(M1.size!=M2.size) return null;
+        Vertex tmp1=G1;
+        int k=0;
+        for(int i=0;i<M1.size;i++){
+            Vertex tmp2=G2;
+            for (int j = 0; j < M1.size; j++) {
+                if(tmp1.getVertex().equals(tmp2.getVertex())){
+                    k++;
+                }
+                tmp2=tmp2.getNext();
+            }
+            tmp1=tmp1.getNext();
+        }
+        if(k!=M1.size) return null;
+        Matrix newM = new Matrix(Math.max(M1.size,M2.size));
+        for (int i = 0; i < M1.size; i++) {
+            for (int j = 0; j < M1.size; j++) {
+                newM.matrix[i][j]=M1.matrix[i][j] & M2.matrix[i][j];
+            }
+        }
+        return newM;
     }
 
+    public static Matrix ringSumMatrixes(Matrix M1,Matrix M2,Vertex G1,Vertex G2){
+        if(M1.size!=M2.size) return null;
+        Vertex tmp1=G1;
+        int k=0;
+        for(int i=0;i<M1.size;i++){
+            Vertex tmp2=G2;
+            for (int j = 0; j < M1.size; j++) {
+                if(tmp1.getVertex().equals(tmp2.getVertex())){
+                    k++;
+                }
+                tmp2=tmp2.getNext();
+            }
+            tmp1=tmp1.getNext();
+        }
+        if(k!=M1.size) return null;
+        Matrix newM = new Matrix(Math.max(M1.size,M2.size));
+        for (int i = 0; i < M1.size; i++) {
+            for (int j = 0; j < M1.size; j++) {
+                newM.matrix[i][j]=M1.matrix[i][j] ^ M2.matrix[i][j];
+            }
+        }
+        tmp1 = G1;
+        tmp1=tmp1.getNext();
+        for (int i = 0; i < newM.size; i++) {
+            int countZero=0;
+            for (int j = 0; j < newM.size; j++) {
+                if(newM.matrix[i][j]==0){
+                    countZero++;
+                }
+            }
+            if(countZero==newM.size){
+                Vertex.deleteVertex(G1,tmp1.getVertex(),newM);
+                tmp1=G1;
+                i=-1;
+            }
+            tmp1=tmp1.getNext();
+        }
+        return newM;
+    }
     public int getSize(){
         return size;
     }

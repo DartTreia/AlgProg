@@ -62,6 +62,7 @@ private void fillGraph(Matrix M){
 
     public static Vertex deleteVertex(Vertex graph,String vertex,Matrix M){
         Vertex temp=graph;
+        temp = temp.next;
         Vertex last=null;
         int count = 1;
         while(temp!=null){
@@ -208,6 +209,137 @@ private void fillGraph(Matrix M){
         Matrix.addVertInMx(M,G);
         return true;
     }
+
+    public static boolean constrictionEdge(String newName,String vert1,String vert2, Matrix M, Vertex G){
+        Vertex v1 = findVertex(G,vert1);
+        Vertex v2 = findVertex(G,vert2);
+        if(v1==null || v2==null){
+            return false;
+        }
+        Vertex[] tmp1 = v1.adjVertexes;
+        Vertex[] tmp2 = v2.adjVertexes;
+        if(tmp1==null || Arrays.stream(tmp1).noneMatch(n-> n==v2)){
+            return false;
+        }
+
+        Vertex[] newAdjVert=new Vertex[M.getSize()];
+        Vertex nwVert = addVertex(G,newName,newAdjVert);
+        int k=M.getSize();
+        if(tmp1!=null) {
+            newAdjVert= Arrays.copyOf(tmp1, k);
+            k-=tmp1.length;
+            if(tmp2!=null){
+                for (int i = 0; i < tmp2.length; i++) {
+                    for (int j = 0; j < newAdjVert.length; j++) {
+                        if(newAdjVert[j]!=null && (newAdjVert[j].vertex.equals(vert1) || newAdjVert[j].vertex.equals(vert2))){
+                            if(Arrays.stream(newAdjVert).noneMatch(n-> n == nwVert)){
+                                newAdjVert[j]=nwVert;
+                            }
+                        }
+                        if ((!(tmp2[i] == newAdjVert[j]) && newAdjVert[j] == null) && !(tmp2[i].vertex.equals(vert1) || tmp2[i].vertex.equals(vert2))) {
+                            newAdjVert[j] = tmp2[i];
+                            k--;
+                            break;
+                        } else if(tmp2[i] == newAdjVert[j]) j = M.getSize();
+                    }
+                }
+            }
+        }
+        else if(tmp2!=null) {
+            newAdjVert = Arrays.copyOf(tmp2, tmp2.length);
+            for (int j = 0; j < newAdjVert.length; j++) {
+                if (newAdjVert[j].vertex.equals(vert1) || newAdjVert[j].vertex.equals(vert2)) {
+                    newAdjVert[j] = nwVert;
+                }
+            }
+            k-=tmp2.length;
+        }
+        if(Arrays.stream(newAdjVert).anyMatch(n->n.vertex.equals(newName))){
+            Vertex[] tmp = new Vertex[newAdjVert.length-1];
+            if(tmp.length!=0) {
+                int o = 0;
+                for (int i = 0; i < newAdjVert.length; i++) {
+                    if (newAdjVert[i]!=null && !newAdjVert[i].vertex.equals(newName)) {
+                        tmp[o] = newAdjVert[i];
+                        o++;
+                    }
+                }
+                newAdjVert = new Vertex[o];
+                newAdjVert = Arrays.copyOf(tmp, o);
+            }
+            else{
+                newAdjVert = new Vertex[0];
+            }
+            k++;
+        }
+        Vertex[] finAdjVert;
+        if(k!=0){
+            finAdjVert=new Vertex[M.getSize()-k];
+            finAdjVert= Arrays.copyOf(newAdjVert, M.getSize()-k);
+        }
+        else{
+            finAdjVert= Arrays.copyOf(newAdjVert, newAdjVert.length);
+        }
+        nwVert.adjVertexes=finAdjVert;
+        deleteVertex(G,vert1,M);
+        deleteVertex(G,vert2,M);
+        for (int i = 0; i < finAdjVert.length; i++) {
+                int size = 1;
+                Vertex[] newArrVert = new Vertex[size];
+                if (finAdjVert[i].adjVertexes != null) {
+                    size += finAdjVert[i].adjVertexes.length;
+                    newArrVert = new Vertex[size];
+                    newArrVert = Arrays.copyOf(finAdjVert[i].adjVertexes, size);
+                }
+                newArrVert[size - 1] = nwVert;
+                finAdjVert[i].setAdjVertexes(newArrVert);
+        }
+
+        Matrix.addVertInMx(M,G);
+        return true;
+    }
+    public static boolean splittingVertexes(Vertex G, Matrix M, String name1, String name2, String oldName){
+        Vertex tmp = G;
+        while(tmp!=null){
+            if(tmp.vertex.equals(oldName)){
+                break;
+            }
+            tmp=tmp.next;
+        }
+        if(tmp==null){return false;}
+        if(Arrays.stream(tmp.adjVertexes).anyMatch(n->n.vertex.equals(oldName))){
+            Vertex[] newTmpAdjVert = new Vertex[tmp.adjVertexes.length-1];
+            int k=0;
+            for (int i = 0; i < tmp.adjVertexes.length; i++) {
+                if(!tmp.adjVertexes[i].vertex.equals(oldName)){
+                    newTmpAdjVert[k]=tmp.adjVertexes[i];
+                    k++;
+                }
+            }
+            tmp.adjVertexes=newTmpAdjVert;
+        }
+        Vertex[] adj1 = new Vertex[tmp.adjVertexes.length-tmp.adjVertexes.length/2];
+        Vertex[] adj2 = new Vertex[tmp.adjVertexes.length/2];
+        if(tmp.adjVertexes.length!=0){
+            int k=0;
+            for(int i=0;i<adj1.length;i++){
+                adj1[i]=tmp.adjVertexes[k];
+                k++;
+            }
+            for(int i=0;i<adj2.length;i++){
+                adj2[i]=tmp.adjVertexes[k];
+                k++;
+            }
+        }
+        deleteVertex(G,oldName,M);
+        addVertex(G,name1,adj1);
+        Matrix.addVertInMx(M,G);
+        addVertex(G,name2,adj2);
+        Matrix.addVertInMx(M,G);
+        return true;
+    }
+
+
 
     public String getVertex() {
         return vertex;
