@@ -100,12 +100,14 @@ private void fillGraph(Matrix M){
         }
         return graph;
     }
-    public static void addVertex(Vertex G, String name,String adjVert){
+    public static boolean addVertex(Vertex G, String name,String adjVert){
+        if(findVertex(G,name)!=null) return false;
         Vertex temp=G;
         String[] adj = adjVert.trim().split(" ");
         Vertex[] tmp = new Vertex[adj.length];
         Vertex newVert = new Vertex(name,null,null,null);
-        while(temp.next!=null){
+        Vertex last=null;
+        while(temp!=null){
             for(int i=0;i<adj.length;i++){
                 if(temp.vertex.equals(adj[i])){
                     //старая
@@ -129,9 +131,11 @@ private void fillGraph(Matrix M){
                     newVert.setAdjVertexes(tmp2);
                 }
             }
+            if(temp.next==null) last=temp;
             temp=temp.next;
         }
-        temp.next=newVert;
+        last.next=newVert;
+        return true;
     }
     public static Vertex addVertex(Vertex G, String name,Vertex adjVert[]){
         Vertex tmp = G;
@@ -298,7 +302,7 @@ private void fillGraph(Matrix M){
         Matrix.addVertInMx(M,G);
         return true;
     }
-    public static boolean splittingVertexes(Vertex G, Matrix M, String name1, String name2, String oldName){
+    public static boolean splittingVertex(Vertex G, Matrix M, String name1, String name2, String oldName){
         Vertex tmp = G;
         while(tmp!=null){
             if(tmp.vertex.equals(oldName)){
@@ -331,11 +335,31 @@ private void fillGraph(Matrix M){
                 k++;
             }
         }
+
+        Vertex newVert1 = Vertex.addVertex(G,name1,adj1);
+        Matrix.addVertInMx(M,G);
+        Vertex newVert2 = addVertex(G,name2,adj2);
+        Matrix.addVertInMx(M,G);
+
+        if(newVert1.adjVertexes!=null) {
+            for (int i = 0;i<newVert1.adjVertexes.length;i++){
+                for(int j=0;j<newVert1.adjVertexes[i].adjVertexes.length;j++){
+                    if(newVert1.adjVertexes[i].adjVertexes[j].vertex.equals(oldName)){
+                        newVert1.adjVertexes[i].adjVertexes[j] = newVert1;
+                    }
+                }
+            }
+        }
+        if(newVert2.adjVertexes!=null) {
+            for (int i = 0;i<newVert2.adjVertexes.length;i++){
+                for(int j=0;j<newVert2.adjVertexes[i].adjVertexes.length;j++){
+                    if(newVert2.adjVertexes[i].adjVertexes[j].vertex.equals(oldName)){
+                        newVert2.adjVertexes[i].adjVertexes[j] = newVert2;
+                    }
+                }
+            }
+        }
         deleteVertex(G,oldName,M);
-        addVertex(G,name1,adj1);
-        Matrix.addVertInMx(M,G);
-        addVertex(G,name2,adj2);
-        Matrix.addVertInMx(M,G);
         return true;
     }
 

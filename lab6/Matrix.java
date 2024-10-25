@@ -90,6 +90,41 @@ public class Matrix {
         System.out.println();
     }
 
+    public static void printMatrix(Matrix M, Vertex G,String[] exVert){
+        if(M==null || M.size<=0){
+            System.out.println("Matrix is empty");
+            return;
+        }
+        System.out.print("M  ");
+        Vertex tmp1=G;
+        tmp1=tmp1.getNext();
+        while(tmp1!=null){
+            final String finStr = tmp1.getVertex();
+            if(exVert==null || Arrays.stream(exVert).noneMatch(n->n.equals(finStr))) {
+                System.out.print(tmp1.getVertex() + " ");
+            }
+            tmp1 = tmp1.getNext();
+        }
+        tmp1=G;
+        tmp1=tmp1.getNext();
+        for (int i = 0; i < M.size; i++) {
+            final String finStr = tmp1.getVertex();
+            if(exVert==null || Arrays.stream(exVert).noneMatch(n->n.equals(finStr))) {
+                System.out.print("\n" + tmp1.getVertex() + "  ");
+                Vertex tmp2=G;
+                tmp2=tmp2.getNext();
+                for (int j = 0; j < M.size; j++) {
+                    final String finStr2 = tmp2.getVertex();
+                    if(exVert==null || Arrays.stream(exVert).noneMatch(n->n.equals(finStr2)))
+                    System.out.print(M.matrix[i][j] + "  ");
+                    tmp2=tmp2.getNext();
+                }
+            }
+            tmp1 = tmp1.getNext();
+        }
+        System.out.println();
+    }
+
     public static void deleteVertInMx(Matrix M,int value){
         int[][] tmp = new int[M.getMatrix().length-1][M.getMatrix()[0].length-1];
         int x=0;
@@ -129,7 +164,9 @@ public class Matrix {
                         if (j != k - 1) {
                             tmp2[i][j] = M.getMatrix()[i][j];
                         } else {
+                            if(tmp.getAdjVertexes()!=null)
                             tmp2[i][j] = Arrays.stream(tmp.getAdjVertexes()).anyMatch(n -> n.getVertex().equals(forCheck.getVertex())) ? 1 : 0;
+                            else tmp2[i][j]=0;
                         }
                     }
                 }
@@ -138,7 +175,9 @@ public class Matrix {
                     nxt2=nxt2.getNext();
                     for (int j = 0; j < k; j++) {
                         final Vertex forCheck2 = nxt2;
+                        if(tmp.getAdjVertexes()!=null)
                         tmp2[i][j] = Arrays.stream(tmp.getAdjVertexes()).anyMatch(n -> n.getVertex().equals(forCheck2.getVertex())) ? 1 : 0;
+                        else tmp2[i][j]=0;
                         nxt2=nxt2.getNext();
                     }
                 }
@@ -198,18 +237,12 @@ public class Matrix {
     public static Matrix ringSumMatrixes(Matrix M1,Matrix M2,Vertex G1,Vertex G2){
         if(M1.size!=M2.size) return null;
         Vertex tmp1=G1;
-        int k=0;
+        Vertex tmp2=G2;
         for(int i=0;i<M1.size;i++){
-            Vertex tmp2=G2;
-            for (int j = 0; j < M1.size; j++) {
-                if(tmp1.getVertex().equals(tmp2.getVertex())){
-                    k++;
-                }
-                tmp2=tmp2.getNext();
-            }
+            if(!tmp1.getVertex().equals(tmp2.getVertex())) return null;
+            tmp2=tmp2.getNext();
             tmp1=tmp1.getNext();
         }
-        if(k!=M1.size) return null;
         Matrix newM = new Matrix(Math.max(M1.size,M2.size));
         for (int i = 0; i < M1.size; i++) {
             for (int j = 0; j < M1.size; j++) {
@@ -218,6 +251,8 @@ public class Matrix {
         }
         tmp1 = G1;
         tmp1=tmp1.getNext();
+        String[] exVert=new String[newM.size];
+        int k=0;
         for (int i = 0; i < newM.size; i++) {
             int countZero=0;
             for (int j = 0; j < newM.size; j++) {
@@ -226,12 +261,18 @@ public class Matrix {
                 }
             }
             if(countZero==newM.size){
-                Vertex.deleteVertex(G1,tmp1.getVertex(),newM);
-                tmp1=G1;
-                i=-1;
+                exVert[k]=tmp1.getVertex();
+                k++;
             }
             tmp1=tmp1.getNext();
         }
+        int count=0;
+        for(int i=0;i<newM.size;i++){
+            if(exVert[i]==null){count++;}
+        }
+        String[] newExVert=new String[newM.size-count];
+        newExVert=Arrays.copyOf(exVert,newM.size-count);
+        printMatrix(newM,G1,newExVert);
         return newM;
     }
     public int getSize(){
