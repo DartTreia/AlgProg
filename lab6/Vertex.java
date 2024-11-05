@@ -45,6 +45,18 @@ private void fillGraph(Matrix M){
         }
     }
 }
+public static int findId(Vertex G,String name){
+    Vertex tempGrpah = G.getNext();
+    int k=0;
+    while(tempGrpah!=null){
+        if(tempGrpah.getVertex().equals(name)){
+            return k;
+        }
+        k++;
+        tempGrpah=tempGrpah.getNext();
+    }
+    return -1;
+}
     public static void printGraph(Vertex graph){
         Vertex temp=graph;
         temp=temp.next;
@@ -311,7 +323,7 @@ private void fillGraph(Matrix M){
             tmp=tmp.next;
         }
         if(tmp==null){return false;}
-        if(Arrays.stream(tmp.adjVertexes).anyMatch(n->n.vertex.equals(oldName))){
+        if(tmp.adjVertexes!=null && Arrays.stream(tmp.adjVertexes).anyMatch(n->n.vertex.equals(oldName))){
             Vertex[] newTmpAdjVert = new Vertex[tmp.adjVertexes.length-1];
             int k=0;
             for (int i = 0; i < tmp.adjVertexes.length; i++) {
@@ -322,9 +334,17 @@ private void fillGraph(Matrix M){
             }
             tmp.adjVertexes=newTmpAdjVert;
         }
-        Vertex[] adj1 = new Vertex[tmp.adjVertexes.length-tmp.adjVertexes.length/2];
-        Vertex[] adj2 = new Vertex[tmp.adjVertexes.length/2];
-        if(tmp.adjVertexes.length!=0){
+        Vertex[] adj1;
+        Vertex[] adj2;
+        if(tmp.adjVertexes!=null) {
+            adj1 = new Vertex[tmp.adjVertexes.length - tmp.adjVertexes.length / 2];
+            adj2 = new Vertex[tmp.adjVertexes.length / 2];
+        }
+        else{
+            adj1=null;
+            adj2=null;
+        }
+        if(tmp.adjVertexes!=null){
             int k=0;
             for(int i=0;i<adj1.length;i++){
                 adj1[i]=tmp.adjVertexes[k];
@@ -339,9 +359,34 @@ private void fillGraph(Matrix M){
         Vertex newVert1 = Vertex.addVertex(G,name1,adj1);
         Matrix.addVertInMx(M,G);
         Vertex newVert2 = addVertex(G,name2,adj2);
-        Matrix.addVertInMx(M,G);
 
-        if(newVert1.adjVertexes!=null) {
+        int k2=1;
+        if(newVert2.adjVertexes!=null){
+            k2+=newVert2.adjVertexes.length;
+
+        }
+        Vertex[] adjVert = new Vertex[k2];
+        if(newVert2.adjVertexes!=null){
+            adjVert=Arrays.copyOf(newVert2.adjVertexes, k2);
+        }
+        adjVert[k2-1]=newVert1;
+        newVert2.adjVertexes = adjVert;
+
+        Matrix.addVertInMx(M,G);
+        M.getMatrix()[M.getSize()-2][M.getSize()-1] = 1;
+        int k=1;
+
+        if(newVert1.adjVertexes!=null){
+            k+=newVert1.adjVertexes.length;
+        }
+        adjVert = new Vertex[k];
+        if(newVert1.adjVertexes!=null){
+            adjVert=Arrays.copyOf(newVert1.adjVertexes, k);
+        }
+        adjVert[k-1]=newVert2;
+        newVert1.adjVertexes = adjVert;
+
+
             for (int i = 0;i<newVert1.adjVertexes.length;i++){
                 for(int j=0;j<newVert1.adjVertexes[i].adjVertexes.length;j++){
                     if(newVert1.adjVertexes[i].adjVertexes[j].vertex.equals(oldName)){
@@ -349,8 +394,6 @@ private void fillGraph(Matrix M){
                     }
                 }
             }
-        }
-        if(newVert2.adjVertexes!=null) {
             for (int i = 0;i<newVert2.adjVertexes.length;i++){
                 for(int j=0;j<newVert2.adjVertexes[i].adjVertexes.length;j++){
                     if(newVert2.adjVertexes[i].adjVertexes[j].vertex.equals(oldName)){
@@ -358,7 +401,8 @@ private void fillGraph(Matrix M){
                     }
                 }
             }
-        }
+
+
         deleteVertex(G,oldName,M);
         return true;
     }
@@ -414,9 +458,34 @@ private void fillGraph(Matrix M){
                 tmp2=tmp2.next;
             }
         }
+        Vertex temp = newVert.next;
+        Vertex temp2;
+
+        int l=1;
+        int tri=0;
+        while(temp!=null){
+            if(temp.adjVertexes!=null){
+                for(int i=0;i<temp.adjVertexes.length;i++){
+                    if(count1<count2)temp2=G2.next;
+                    else temp2=G1.next;
+                    for (int j = 0; j < Math.max(count1,count2); j++) {
+                        if(temp.adjVertexes[i]!=null && temp.adjVertexes[i].getVertex().equals(temp2.getVertex())){
+                           temp.adjVertexes[i] = findVertex(newVert,temp.adjVertexes[i].vertex+l);
+                        }
+                        temp2=temp2.next;
+                    }
+
+                }
+            }
+            temp=temp.next;
+            tri++;
+            if(tri==Math.max(count1,count2)){
+                l++;
+                tri=0;
+            }
+        }
         return newVert;
     }
-
     public String getVertex() {
         return vertex;
     }

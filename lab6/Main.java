@@ -1,13 +1,12 @@
 import java.io.*;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main{
 
     static Scanner sc = new Scanner(System.in);
     public static void clearConsole(){
-        for(int i=0;i<100;i++){
             System.out.print("\n\n");
-        }
     }
     public static void main(String[] args) {
         System.out.println("To start program write down size of 1st and 2nd matrixes: ");
@@ -161,31 +160,43 @@ public class Main{
                     }
                     break;
                 case 8:
+                    Matrix decM = new Matrix(0);
                     Vertex decNew = Vertex.decMulti(G1, G2);
                     if (decNew == null) {
                         System.out.println("Decurt failed");
                     } else {
                         System.out.println("Decurt multiplication:");
                         Vertex.printGraph(decNew);
+                        int len = 0;
+                        Vertex tmp = decNew.getNext();
+                        Vertex del = new Vertex("start",null,null,null);
+                        while(tmp != null) {
+                            Vertex.addVertex(del, tmp.getVertex(), tmp.getAdjVertexes());
+                            Matrix.addVertInMx(decM, del);
+                            tmp = tmp.getNext();
+                        }
+                        Matrix.printMatrix(decM,decNew);
+                        Matrix.printMatrixes(M1,M2,G1,G2);
                     }
                     break;
                 case 9:
                     Matrix newM = Matrix.mergeMatrixes(M1, M2, G1, G2);
                     if (newM == null)
                         System.out.println("Merge failed");
-                    else Matrix.printMatrix(newM, G1);
                     break;
                 case 10:
                     Matrix intM = Matrix.intersectionMatrixes(M1,M2,G1,G2);
                     if (intM == null)
                         System.out.println("Intersection failed");
-                    else Matrix.printMatrix(intM, G1);
+                    else{
+                        Vertex.printGraph(new Vertex("start",null,null,intM));
+                    }
                     break;
                 case 11:
-
                     Matrix ringM = Matrix.ringSumMatrixes(M1,M2,G1,G2);
-                    if(ringM == null)
+                    if(ringM == null) {
                         System.out.println("Ring sum failed");
+                    }
                     break;
                 case 12:
                     Runtime.getRuntime().exit(0);

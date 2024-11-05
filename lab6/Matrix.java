@@ -50,10 +50,11 @@ public class Matrix {
                 }
             }
             else{
-                System.out.print("\n ");
-                for (int j = 0; j < M2.getMatrix().length; j++) {
+                System.out.print("\n    ");
+                for (int j = 0; j < M1.getMatrix().length; j++) {
                     System.out.print("   ");
                 }
+
             }
             if(i<M2.getMatrix().length) {
                 System.out.print("  "+tmp2.getVertex()+"  ");
@@ -105,14 +106,12 @@ public class Matrix {
             }
             tmp1 = tmp1.getNext();
         }
-        tmp1=G;
-        tmp1=tmp1.getNext();
+        tmp1=G.getNext();
         for (int i = 0; i < M.size; i++) {
             final String finStr = tmp1.getVertex();
             if(exVert==null || Arrays.stream(exVert).noneMatch(n->n.equals(finStr))) {
                 System.out.print("\n" + tmp1.getVertex() + "  ");
-                Vertex tmp2=G;
-                tmp2=tmp2.getNext();
+                Vertex tmp2=G.getNext();
                 for (int j = 0; j < M.size; j++) {
                     final String finStr2 = tmp2.getVertex();
                     if(exVert==null || Arrays.stream(exVert).noneMatch(n->n.equals(finStr2)))
@@ -164,7 +163,7 @@ public class Matrix {
                         if (j != k - 1) {
                             tmp2[i][j] = M.getMatrix()[i][j];
                         } else {
-                            if(tmp.getAdjVertexes()!=null)
+                            if(tmp.getAdjVertexes()!=null && forCheck!=null)
                             tmp2[i][j] = Arrays.stream(tmp.getAdjVertexes()).anyMatch(n -> n.getVertex().equals(forCheck.getVertex())) ? 1 : 0;
                             else tmp2[i][j]=0;
                         }
@@ -175,7 +174,7 @@ public class Matrix {
                     nxt2=nxt2.getNext();
                     for (int j = 0; j < k; j++) {
                         final Vertex forCheck2 = nxt2;
-                        if(tmp.getAdjVertexes()!=null)
+                        if(tmp.getAdjVertexes()!=null && forCheck2!=null)
                         tmp2[i][j] = Arrays.stream(tmp.getAdjVertexes()).anyMatch(n -> n.getVertex().equals(forCheck2.getVertex())) ? 1 : 0;
                         else tmp2[i][j]=0;
                         nxt2=nxt2.getNext();
@@ -188,92 +187,346 @@ public class Matrix {
         M.matrix = tmp2;
     }
     public static Matrix mergeMatrixes(Matrix M1,Matrix M2,Vertex G1,Vertex G2){
-        if(M1.size!=M2.size) return null;
-        Vertex tmp1=G1;
-        int k=0;
+        Vertex temp1=G1.getNext();
+        Vertex temp2=G2.getNext();
+        Vertex newGraph = new Vertex("start",null,null,null);
+        String[] uniqVert= new String[M1.size+M2.size];
+        Arrays.fill(uniqVert,"");
+        int uniqVerts=0;
         for(int i=0;i<M1.size;i++){
-            Vertex tmp2=G2;
-            for (int j = 0; j < M1.size; j++) {
-                if(tmp1.getVertex().equals(tmp2.getVertex())){
-                    k++;
+            final Vertex temp = temp1;
+            if(Arrays.stream(uniqVert).noneMatch(n->n.equals(temp.getVertex()))){
+                uniqVert[uniqVerts]=temp1.getVertex();
+                Vertex.addVertex(newGraph,temp.getVertex(), (Vertex[]) null);
+                uniqVerts++;
+            }
+            temp1=temp1.getNext();
+        }
+        for(int i=0;i<M2.size;i++){
+            final Vertex temp = temp2;
+            if(Arrays.stream(uniqVert).noneMatch(n->n.equals(temp.getVertex()))){
+                uniqVert[uniqVerts]=temp2.getVertex();
+                Vertex.addVertex(newGraph,temp.getVertex(), (Vertex[]) null);
+                uniqVerts++;
+            }
+            temp2=temp2.getNext();
+        }
+
+        int[][] newM= new int[uniqVerts][uniqVerts];
+        for(int i=0;i<uniqVerts;i++){
+            Arrays.fill(newM[i],-1);
+        }
+        temp1=G1.getNext();
+
+        for(int i=0;i<M1.size;i++){
+            temp2=G2.getNext();
+            for (int j = 0; j < M2.size; j++) {
+                if(temp1.getVertex().equals(temp2.getVertex())){
+                    int k=Vertex.findId(newGraph,temp1.getVertex());
+                    Vertex tempGr = newGraph.getNext();
+                    int l=0;
+                    while(tempGr!=null){
+                        int y1=Vertex.findId(G1,tempGr.getVertex());
+                        int y2=Vertex.findId(G2,tempGr.getVertex());
+                        if(y1!=-1 && y2!=-1)
+                            newM[k][l]=M1.matrix[i][y1] | M2.matrix[j][y2];
+                        else if(y1!=-1)
+                            newM[k][l]=M1.matrix[i][y1];
+                        else if(y2!=-1)
+                            newM[k][l]=M2.matrix[j][y2];
+
+                        l++;
+                        tempGr=tempGr.getNext();
+                    }
+                    break;
                 }
-                tmp2=tmp2.getNext();
+                else if(j==M2.size-1){
+                    int k=Vertex.findId(newGraph,temp1.getVertex());
+                    Vertex tempGr = newGraph.getNext();
+                    int l=0;
+                    while(tempGr!=null){
+                        int y1=Vertex.findId(G1,tempGr.getVertex());
+                        if(y1!=-1)
+                            newM[k][l]=M1.matrix[i][y1];
+                        else
+                            newM[k][l]=0;
+                        l++;
+                        tempGr=tempGr.getNext();
+                    }
+                }
+                temp2=temp2.getNext();
             }
-            tmp1=tmp1.getNext();
+            temp1=temp1.getNext();
         }
-        if(k!=M1.size) return null;
-        Matrix newM = new Matrix(Math.max(M1.size,M2.size));
-        for (int i = 0; i < M1.size; i++) {
-            for (int j = 0; j < M1.size; j++) {
-                newM.matrix[i][j]=M1.matrix[i][j] | M2.matrix[i][j];
+        temp2=G2.getNext();
+        int k=0;
+        int start=0;
+        for(int j=0;j<newM.length;j++){
+            if(newM[j][0]==-1){
+                k++;
+                if(start==0) start=j;
             }
         }
-        return newM;
+        for(int i=0;i<M2.size;i++){
+            if(newM[Vertex.findId(newGraph,temp2.getVertex())][0]!=-1){
+                temp2=temp2.getNext();
+                continue;
+            }
+            Vertex temp = G2.getNext();
+            for(int j=0;j<newM.length;j++){
+                int x;
+                if(temp!=null)
+                    x = Vertex.findId(G2,temp.getVertex());
+                else x=-1;
+                if(x!=-1){
+                    newM[start][j]=M2.matrix[i][x];
+                }
+                else{
+                    newM[start][j]=0;
+                }
+                if(temp!=null)
+                    temp=temp.getNext();
+            }
+            start++;
+            temp2=temp2.getNext();
+        }
+        Matrix Mres = new Matrix(newM.length);
+        Mres.matrix=newM;
+        temp1=newGraph.getNext();
+        for(int i = 0; i < Mres.size; i++){
+            temp2=newGraph.getNext();
+            for(int j = 0; j < Mres.size; j++){
+                if(Mres.matrix[i][j]==1){
+                    k=1;
+                    if(temp1.getAdjVertexes()!=null)
+                        k=1+temp1.getAdjVertexes().length;
+                    Vertex[] tmp = new Vertex[k];
+                    if(temp1.getAdjVertexes()!=null)
+                        tmp= Arrays.copyOf(temp1.getAdjVertexes(), k);
+                    tmp[tmp.length-1]=temp2;
+                    temp1.setAdjVertexes(tmp);
+                }
+                temp2=temp2.getNext();
+            }
+            temp1=temp1.getNext();
+        }
+        printMatrix(Mres,newGraph);
+        Vertex.printGraph(newGraph);
+        return Mres;
     }
     public static Matrix intersectionMatrixes(Matrix M1,Matrix M2,Vertex G1,Vertex G2){
-        if(M1.size!=M2.size) return null;
-        Vertex tmp1=G1;
-        int k=0;
+        Vertex temp1=G1.getNext();
+        Vertex temp2=G2.getNext();
+        Vertex newGraph = new Vertex("start",null,null,null);
+        String[] uniqVert= new String[M1.size+M2.size];
+        Arrays.fill(uniqVert,"");
+        int uniqVerts=0;
         for(int i=0;i<M1.size;i++){
-            Vertex tmp2=G2;
-            for (int j = 0; j < M1.size; j++) {
-                if(tmp1.getVertex().equals(tmp2.getVertex())){
-                    k++;
+            temp2=G2.getNext();
+            for(int j=0;j<M2.size;j++){
+                if(temp1.getVertex().equals(temp2.getVertex())){
+                    uniqVert[uniqVerts]=temp1.getVertex();
+                    Vertex.addVertex(newGraph, temp1.getVertex(), (Vertex[]) null);
+                    uniqVerts++;
                 }
-                tmp2=tmp2.getNext();
+                temp2=temp2.getNext();
             }
-            tmp1=tmp1.getNext();
+            temp1=temp1.getNext();
         }
-        if(k!=M1.size) return null;
-        Matrix newM = new Matrix(Math.max(M1.size,M2.size));
-        for (int i = 0; i < M1.size; i++) {
-            for (int j = 0; j < M1.size; j++) {
-                newM.matrix[i][j]=M1.matrix[i][j] & M2.matrix[i][j];
+
+
+        int[][] newM= new int[uniqVerts][uniqVerts];
+        for(int i=0;i<uniqVerts;i++){
+            Arrays.fill(newM[i],-1);
+        }
+        temp1=G1.getNext();
+
+        for(int i=0;i<M1.size;i++){
+            temp2=G2.getNext();
+            for (int j = 0; j < M2.size; j++) {
+                if(temp1.getVertex().equals(temp2.getVertex())){
+                    int k=Vertex.findId(newGraph,temp1.getVertex());
+                    Vertex tempGr = newGraph.getNext();
+                    int l=0;
+                    while(tempGr!=null){
+                        int y1=Vertex.findId(G1,tempGr.getVertex());
+                        int y2=Vertex.findId(G2,tempGr.getVertex());
+                        if(y1!=-1 && y2!=-1)
+                            newM[k][l]=M1.matrix[i][y1] & M2.matrix[j][y2];
+                        else if(y1!=-1)
+                            newM[k][l]=M1.matrix[i][y1];
+                        else if(y2!=-1)
+                            newM[k][l]=M2.matrix[j][y2];
+
+                        l++;
+                        tempGr=tempGr.getNext();
+                    }
+                    break;
+                }
+                temp2=temp2.getNext();
             }
+            temp1=temp1.getNext();
         }
-        return newM;
+
+        Matrix Mres = new Matrix(newM.length);
+        Mres.matrix=newM;
+        temp1=newGraph.getNext();
+        for(int i = 0; i < Mres.size; i++){
+            temp2=newGraph.getNext();
+            for(int j = 0; j < Mres.size; j++){
+                if(Mres.matrix[i][j]==1){
+                    int k=1;
+                    if(temp1.getAdjVertexes()!=null)
+                        k=1+temp1.getAdjVertexes().length;
+                    Vertex[] tmp = new Vertex[k];
+                    if(temp1.getAdjVertexes()!=null)
+                        tmp= Arrays.copyOf(temp1.getAdjVertexes(), k);
+                    tmp[tmp.length-1]=temp2;
+                    temp1.setAdjVertexes(tmp);
+                }
+                temp2=temp2.getNext();
+            }
+            temp1=temp1.getNext();
+        }
+        printMatrix(Mres,newGraph);
+        Vertex.printGraph(newGraph);
+        return Mres;
     }
 
     public static Matrix ringSumMatrixes(Matrix M1,Matrix M2,Vertex G1,Vertex G2){
-        if(M1.size!=M2.size) return null;
-        Vertex tmp1=G1;
-        Vertex tmp2=G2;
+        Vertex temp1=G1.getNext();
+        Vertex temp2=G2.getNext();
+        Vertex newGraph = new Vertex("start",null,null,null);
+        String[] uniqVert= new String[M1.size+M2.size];
+        Arrays.fill(uniqVert,"");
+        int uniqVerts=0;
         for(int i=0;i<M1.size;i++){
-            if(!tmp1.getVertex().equals(tmp2.getVertex())) return null;
-            tmp2=tmp2.getNext();
-            tmp1=tmp1.getNext();
-        }
-        Matrix newM = new Matrix(Math.max(M1.size,M2.size));
-        for (int i = 0; i < M1.size; i++) {
-            for (int j = 0; j < M1.size; j++) {
-                newM.matrix[i][j]=M1.matrix[i][j] ^ M2.matrix[i][j];
+            final Vertex temp = temp1;
+            if(Arrays.stream(uniqVert).noneMatch(n->n.equals(temp.getVertex()))){
+                uniqVert[uniqVerts]=temp1.getVertex();
+                Vertex.addVertex(newGraph,temp.getVertex(), (Vertex[]) null);
+                uniqVerts++;
             }
+            temp1=temp1.getNext();
         }
-        tmp1 = G1;
-        tmp1=tmp1.getNext();
-        String[] exVert=new String[newM.size];
-        int k=0;
-        for (int i = 0; i < newM.size; i++) {
-            int countZero=0;
-            for (int j = 0; j < newM.size; j++) {
-                if(newM.matrix[i][j]==0){
-                    countZero++;
+        for(int i=0;i<M2.size;i++){
+            final Vertex temp = temp2;
+            if(Arrays.stream(uniqVert).noneMatch(n->n.equals(temp.getVertex()))){
+                uniqVert[uniqVerts]=temp2.getVertex();
+                Vertex.addVertex(newGraph,temp.getVertex(), (Vertex[]) null);
+                uniqVerts++;
+            }
+            temp2=temp2.getNext();
+        }
+
+        int[][] newM= new int[uniqVerts][uniqVerts];
+        for(int i=0;i<uniqVerts;i++){
+            Arrays.fill(newM[i],-1);
+        }
+        temp1=G1.getNext();
+
+        for(int i=0;i<M1.size;i++){
+            temp2=G2.getNext();
+            for (int j = 0; j < M2.size; j++) {
+                if(temp1.getVertex().equals(temp2.getVertex())){
+                    int k=Vertex.findId(newGraph,temp1.getVertex());
+                    Vertex tempGr = newGraph.getNext();
+                    int l=0;
+                    while(tempGr!=null){
+                        int y1=Vertex.findId(G1,tempGr.getVertex());
+                        int y2=Vertex.findId(G2,tempGr.getVertex());
+                        if(y1!=-1 && y2!=-1)
+                            newM[k][l]=M1.matrix[i][y1] ^ M2.matrix[j][y2];
+                        else if(y1!=-1)
+                            newM[k][l]=M1.matrix[i][y1];
+                        else if(y2!=-1)
+                            newM[k][l]=M2.matrix[j][y2];
+
+                        l++;
+                        tempGr=tempGr.getNext();
+                    }
+                    break;
                 }
+                else if(j==M2.size-1){
+                    int k=Vertex.findId(newGraph,temp1.getVertex());
+                    Vertex tempGr = newGraph.getNext();
+                    int l=0;
+                    while(tempGr!=null){
+                        int y1=Vertex.findId(G1,tempGr.getVertex());
+                        if(y1!=-1)
+                            newM[k][l]=M1.matrix[i][y1];
+                        else
+                            newM[k][l]=0;
+                        l++;
+                        tempGr=tempGr.getNext();
+                    }
+                }
+                temp2=temp2.getNext();
             }
-            if(countZero==newM.size){
-                exVert[k]=tmp1.getVertex();
+            temp1=temp1.getNext();
+        }
+        temp2=G2.getNext();
+        int k=0;
+        int start=0;
+        for(int j=0;j<newM.length;j++){
+            if(newM[j][0]==-1){
                 k++;
+                if(start==0) start=j;
             }
-            tmp1=tmp1.getNext();
         }
-        int count=0;
-        for(int i=0;i<newM.size;i++){
-            if(exVert[i]==null){count++;}
+        for(int i=0;i<M2.size;i++){
+            if(newM[Vertex.findId(newGraph,temp2.getVertex())][0]!=-1){
+                temp2=temp2.getNext();
+                continue;
+            }
+            Vertex temp = G2.getNext();
+            for(int j=0;j<newM.length;j++){
+                int x;
+                if(temp!=null)
+                    x = Vertex.findId(G2,temp.getVertex());
+                else x=-1;
+                if(x!=-1){
+                    newM[start][j]=M2.matrix[i][x];
+                }
+                else{
+                    newM[start][j]=0;
+                }
+                if(temp!=null)
+                    temp=temp.getNext();
+            }
+            start++;
+            temp2=temp2.getNext();
         }
-        String[] newExVert=new String[newM.size-count];
-        newExVert=Arrays.copyOf(exVert,newM.size-count);
-        printMatrix(newM,G1,newExVert);
-        return newM;
+        Matrix Mres = new Matrix(newM.length);
+        Mres.matrix=newM;
+        Vertex temp = newGraph.getNext();
+        for(int i=0;i<newM.length;i++){
+            if(Arrays.stream(newM[i]).noneMatch(n->n==1)){
+                Vertex.deleteVertex(newGraph,temp.getVertex(),Mres);
+            }
+            temp=temp.getNext();
+        }
+        temp1=newGraph.getNext();
+        for(int i = 0; i < Mres.size; i++){
+            temp2=newGraph.getNext();
+            for(int j = 0; j < Mres.size; j++){
+                if(Mres.matrix[i][j]==1){
+                    k=1;
+                    if(temp1.getAdjVertexes()!=null)
+                        k=1+temp1.getAdjVertexes().length;
+                    Vertex[] tmp = new Vertex[k];
+                    if(temp1.getAdjVertexes()!=null)
+                        tmp= Arrays.copyOf(temp1.getAdjVertexes(), k);
+                    tmp[tmp.length-1]=temp2;
+                    temp1.setAdjVertexes(tmp);
+                }
+                temp2=temp2.getNext();
+            }
+            temp1=temp1.getNext();
+        }
+        printMatrix(Mres,newGraph);
+        Vertex.printGraph(newGraph);
+        return Mres;
     }
     public int getSize(){
         return size;
