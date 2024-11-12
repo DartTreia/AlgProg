@@ -186,6 +186,74 @@ public class Matrix {
         M.size++;
         M.matrix = tmp2;
     }
+    public static int[] DFSloop(Matrix M, int vert, int[] visVerts){
+        if(vert>M.size)return null;
+        if(visVerts!=null && Arrays.stream(visVerts).anyMatch(n->n==vert)) {
+            return visVerts;
+        }else{
+            int k=1;
+            if(visVerts!=null) k+=visVerts.length;
+            int[] temp = new int[k];
+            if(visVerts!=null) temp=Arrays.copyOf(visVerts, k);
+            temp[k-1]=vert;
+            visVerts=temp;
+        }
+        int k=0;
+        for(int i=0;i<M.size;i++){
+            if(M.matrix[vert-1][i]==1) k++;
+        }
+        if(k==0) return visVerts;
+        for(int i=0;i<M.size;i++){
+            if(k>0 && M.matrix[vert-1][i]==1) {
+                visVerts = DFSloop(M, i+1, visVerts);
+                k--;
+            }
+        }
+        return visVerts;
+    }
+    public static int[] DFSMat(Matrix M, int vert){
+        if(vert>M.size)return null;
+        int[] visVerts=null;
+        int k=0;
+        for(int i=0;i<M.size;i++){
+            if(M.matrix[vert-1][i]==1) k++;
+        }
+        if(k==0){
+            visVerts=new int[1];
+            visVerts[0]=vert;
+            return visVerts;
+        }
+        Stack stack = null;
+        stack = Stack.stackPush(stack,vert);
+        while(stack!=null){
+            Stack temp = Stack.stackPop(stack);
+            stack=stack.head;
+            if(visVerts==null || Arrays.stream(visVerts).noneMatch(n->n==temp.index)){
+                int k2=1;
+                if(visVerts!=null) k2+=visVerts.length;
+                int[] tempVerts =new int[k2];
+                if(visVerts!=null) tempVerts = Arrays.copyOf(visVerts, k2);
+                tempVerts[k2-1]=temp.index;
+                visVerts=tempVerts;
+                int count=0;
+                for(int i=0;i<M.size;i++){
+                    if(M.matrix[temp.index-1][i]==1) count++;
+                }
+                if(count!=0){
+                    for (int i = 0; i < M.size;i++) {
+                        if(count>0 && M.matrix[temp.index-1][i]==1) {
+                            int vertex = i+1;
+                            if (Arrays.stream(visVerts).noneMatch(n -> n==vertex))
+                                stack = Stack.stackPush(stack, vertex);
+                            count--;
+                        }
+                    }
+                }
+            }
+        }
+
+        return visVerts;
+    }
     public int getSize(){
         return size;
     }

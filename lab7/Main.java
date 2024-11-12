@@ -23,9 +23,11 @@ public class Main{
             System.out.println("2. Show graph");
             System.out.println("3. Add vertex");
             System.out.println("4. Delete vertex");
-            System.out.println("5. Deep loop find");
-            System.out.println("6. Deep non-loop find");
-            System.out.println("7. Exit");
+            System.out.println("5. Deep loop find(Incident list)");
+            System.out.println("6. Deep non-loop find(Incident list)");
+            System.out.println("7. Deep loop find(Matrix)");
+            System.out.println("8. Deep non-loop find(Matrix)");
+            System.out.println("9. Exit");
             int choice = sc.nextInt();
             clearConsole();
             switch (choice) {
@@ -137,6 +139,38 @@ public class Main{
                     }
                     break;
                 case 7:
+                    System.out.println("In which matrix do u want to search the end? (1 or 2)");
+                    int choice7 = sc.nextInt();
+                    System.out.print("Write down the number of vertex which will be start: ");
+                    int name7 = sc.nextInt();
+                    switch (choice7) {
+                        case 1:
+                            System.out.println(Arrays.toString(Matrix.DFSloop(M1, name7, null)));
+                            break;
+                        case 2:
+                            System.out.println(Arrays.toString(Matrix.DFSloop(M2, name7, null)));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 8:
+                    System.out.println("In which matrix do u want to search the end? (1 or 2)");
+                    int choice8 = sc.nextInt();
+                    System.out.print("Write down the number of vertex which will be start: ");
+                    int name8 = sc.nextInt();
+                    switch (choice8) {
+                        case 1:
+                            System.out.println(Arrays.toString(Matrix.DFSMat(M1, name8)));
+                            break;
+                        case 2:
+                            System.out.println(Arrays.toString(Matrix.DFSMat(M2, name8)));
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 9:
                     Runtime.getRuntime().exit(0);
                     break;
                     default:
