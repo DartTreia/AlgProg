@@ -18,57 +18,9 @@ public class Matrix {
             }
         }
     }
-    public static void printMatrixes(Matrix M1, Matrix M2,Vertex G1, Vertex G2){
-        if((M1==null && M2==null) || (M1.getMatrix().length==0 && M2.getMatrix().length==0)){
-            System.out.println("Matrixes are empty");
-            return;
-        }
-        System.out.print("M1 ");
-        Vertex tmp1=G1;
-        tmp1=tmp1.getNext();
-        while(tmp1!=null){
-            System.out.print(tmp1.getVertex()+" ");
-            tmp1=tmp1.getNext();
-        }
-        System.out.print("   M2 ");
-        tmp1=G2;
-        tmp1=tmp1.getNext();
-        while(tmp1!=null){
-            System.out.print(tmp1.getVertex()+" ");
-            tmp1=tmp1.getNext();
-        }
-        tmp1=G1;
-        tmp1=tmp1.getNext();
-        Vertex tmp2 =G2;
-        tmp2=tmp2.getNext();
-        for (int i = 0; i < Math.max(M1.getMatrix().length,M2.getMatrix().length); i++) {
-            if(i<M1.getMatrix().length){
-                System.out.print("\n"+tmp1.getVertex()+"  ");
-                tmp1=tmp1.getNext();
-                for (int j = 0; j < M1.getMatrix().length; j++) {
-                    System.out.print(M1.getMatrix()[i][j]+"  ");
-                }
-            }
-            else{
-                System.out.print("\n    ");
-                for (int j = 0; j < M1.getMatrix().length; j++) {
-                    System.out.print("   ");
-                }
 
-            }
-            if(i<M2.getMatrix().length) {
-                System.out.print("  "+tmp2.getVertex()+"  ");
-                tmp2=tmp2.getNext();
-                for (int j = 0; j < M2.getMatrix().length; j++) {
-                    System.out.print(M2.getMatrix()[i][j] + "  ");
-                }
-            }
-        }
-        System.out.println();
-    }
-
-    public static void printMatrix(Matrix M, Vertex G){
-        if(M==null || M.size<=0){
+    public void printMatrix(Vertex G){
+        if(this.size<=0){
             System.out.println("Matrix is empty");
             return;
         }
@@ -81,79 +33,46 @@ public class Matrix {
         }
         tmp1=G;
         tmp1=tmp1.getNext();
-        for (int i = 0; i < M.size; i++) {
+        for (int i = 0; i < this.size; i++) {
             System.out.print("\n"+tmp1.getVertex()+"  ");
             tmp1=tmp1.getNext();
-            for (int j = 0; j < M.size; j++) {
-                System.out.print(M.matrix[i][j]+"  ");
+            for (int j = 0; j < this.size; j++) {
+                System.out.print(this.matrix[i][j]+"  ");
             }
         }
         System.out.println();
     }
 
-    public static void printMatrix(Matrix M, Vertex G,String[] exVert){
-        if(M==null || M.size<=0){
-            System.out.println("Matrix is empty");
-            return;
-        }
-        System.out.print("M  ");
-        Vertex tmp1=G;
-        tmp1=tmp1.getNext();
-        while(tmp1!=null){
-            final String finStr = tmp1.getVertex();
-            if(exVert==null || Arrays.stream(exVert).noneMatch(n->n.equals(finStr))) {
-                System.out.print(tmp1.getVertex() + " ");
-            }
-            tmp1 = tmp1.getNext();
-        }
-        tmp1=G.getNext();
-        for (int i = 0; i < M.size; i++) {
-            final String finStr = tmp1.getVertex();
-            if(exVert==null || Arrays.stream(exVert).noneMatch(n->n.equals(finStr))) {
-                System.out.print("\n" + tmp1.getVertex() + "  ");
-                Vertex tmp2=G.getNext();
-                for (int j = 0; j < M.size; j++) {
-                    final String finStr2 = tmp2.getVertex();
-                    if(exVert==null || Arrays.stream(exVert).noneMatch(n->n.equals(finStr2)))
-                    System.out.print(M.matrix[i][j] + "  ");
-                    tmp2=tmp2.getNext();
-                }
-            }
-            tmp1 = tmp1.getNext();
-        }
-        System.out.println();
-    }
-
-    public static void deleteVertInMx(Matrix M,int value){
-        int[][] tmp = new int[M.getMatrix().length-1][M.getMatrix()[0].length-1];
+    public void deleteVertInMx(int value){
+        int[][] tmp = new int[this.getMatrix().length-1][this.getMatrix()[0].length-1];
         int x=0;
-        for (int i = 0; i < M.getMatrix().length; i++) {
+        for (int i = 0; i < this.getMatrix().length; i++) {
             if(i!=value-1) {
                 int y=0;
-                for (int j = 0; j < M.getMatrix()[0].length; j++) {
+                for (int j = 0; j < this.getMatrix()[0].length; j++) {
                     if (j != value - 1) {
-                        tmp[x][y] = M.getMatrix()[i][j];
+                        tmp[x][y] = this.getMatrix()[i][j];
                         y++;
                     }
                 }
                 x++;
             }
         }
-        M.size--;
-        M.setMatrix(tmp);
+        this.size--;
+        this.matrix=tmp;
     }
 
-    public static void addVertInMx(Matrix M, Vertex G){
+    public void addVertInMx(Vertex G){
         Vertex tmp=G;
         while(tmp.getNext()!=null){
             tmp=tmp.getNext();
         }
 
         int k=1;
-        if(M.size!=0)
-            k=1+M.size; // размер массива смежных вершин
+        if(this.size!=0)
+            k=1+this.size; // размер массива смежных вершин
         int[][] tmp2 = new int[k][k];
-        if(M.size!=0) {
+        if(this.size!=0) {
             Vertex nxt = G;
             nxt=nxt.getNext();
             for (int i = 0; i < k; i++) {
@@ -161,7 +80,7 @@ public class Matrix {
                 if(i!=k-1) {
                     for (int j = 0; j < k; j++) {
                         if (j != k - 1) {
-                            tmp2[i][j] = M.getMatrix()[i][j];
+                            tmp2[i][j] = this.getMatrix()[i][j];
                         } else {
                             if(tmp.getAdjVertexes()!=null && forCheck!=null)
                             tmp2[i][j] = Arrays.stream(tmp.getAdjVertexes()).anyMatch(n -> n.getVertex().equals(forCheck.getVertex())) ? 1 : 0;
@@ -183,11 +102,11 @@ public class Matrix {
                 nxt = nxt.getNext();
             }
         }
-        M.size++;
-        M.matrix = tmp2;
+        this.size++;
+        this.matrix = tmp2;
     }
-    public static int[] DFSloop(Matrix M, int vert, int[] visVerts){
-        if(vert>M.size)return null;
+    public int[] DFSloop(int vert, int[] visVerts){
+        if(vert>this.size)return null;
         if(visVerts!=null && Arrays.stream(visVerts).anyMatch(n->n==vert)) {
             return visVerts;
         }else{
@@ -199,34 +118,34 @@ public class Matrix {
             visVerts=temp;
         }
         int k=0;
-        for(int i=0;i<M.size;i++){
-            if(M.matrix[vert-1][i]==1) k++;
+        for(int i=0;i<this.size;i++){
+            if(this.matrix[vert-1][i]==1) k++;
         }
         if(k==0) return visVerts;
-        for(int i=0;i<M.size;i++){
-            if(k>0 && M.matrix[vert-1][i]==1) {
-                visVerts = DFSloop(M, i+1, visVerts);
+        for(int i=0;i<this.size;i++){
+            if(k>0 && this.matrix[vert-1][i]==1) {
+                visVerts = this.DFSloop(i+1, visVerts);
                 k--;
             }
         }
         return visVerts;
     }
-    public static int[] DFSMat(Matrix M, int vert){
-        if(vert>M.size)return null;
+    public int[] DFSMat(int vert){
+        if(vert>this.size)return null;
         int[] visVerts=null;
         int k=0;
-        for(int i=0;i<M.size;i++){
-            if(M.matrix[vert-1][i]==1) k++;
+        for(int i=0;i<this.size;i++){
+            if(this.matrix[vert-1][i]==1) k++;
         }
         if(k==0){
             visVerts=new int[1];
             visVerts[0]=vert;
             return visVerts;
         }
-        Stack stack = null;
-        stack = Stack.stackPush(stack,vert);
+        Stack stack = new Stack(0,null);
+        stack = stack.stackPush(vert);
         while(stack!=null){
-            Stack temp = Stack.stackPop(stack);
+            Stack temp = stack.stackPop();
             stack=stack.head;
             if(visVerts==null || Arrays.stream(visVerts).noneMatch(n->n==temp.index)){
                 int k2=1;
@@ -236,15 +155,18 @@ public class Matrix {
                 tempVerts[k2-1]=temp.index;
                 visVerts=tempVerts;
                 int count=0;
-                for(int i=0;i<M.size;i++){
-                    if(M.matrix[temp.index-1][i]==1) count++;
+                for(int i=0;i<this.size;i++){
+                    if(this.matrix[temp.index-1][i]==1) count++;
                 }
                 if(count!=0){
-                    for (int i = 0; i < M.size;i++) {
-                        if(count>0 && M.matrix[temp.index-1][i]==1) {
+                    for (int i = 0; i < this.size;i++) {
+                        if(count>0 && this.matrix[temp.index-1][i]==1) {
                             int vertex = i+1;
-                            if (Arrays.stream(visVerts).noneMatch(n -> n==vertex))
-                                stack = Stack.stackPush(stack, vertex);
+                            if (Arrays.stream(visVerts).noneMatch(n -> n==vertex)){
+                                if(stack==null) stack = new Stack(0,null);
+                                stack = stack.stackPush(vertex);
+                            }
+
                             count--;
                         }
                     }

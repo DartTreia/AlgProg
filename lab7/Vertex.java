@@ -12,8 +12,8 @@ public class Vertex {
         if(vertex.equals("start") && M!=null)
             fillGraph(M);
     }
-    private static Vertex findVertex(Vertex G,String name){
-        Vertex tmp  = G;
+    private Vertex findVertex(String name){
+        Vertex tmp  = this;
         while(tmp != null){
             if(tmp.getVertex().equals(name)) return tmp;
             tmp = tmp.getNext();
@@ -45,8 +45,8 @@ private void fillGraph(Matrix M){
         }
     }
 }
-public static int findId(Vertex G,String name){
-    Vertex tempGrpah = G.getNext();
+public int findId(String name){
+    Vertex tempGrpah = this.getNext();
     int k=0;
     while(tempGrpah!=null){
         if(tempGrpah.getVertex().equals(name)){
@@ -57,8 +57,8 @@ public static int findId(Vertex G,String name){
     }
     return -1;
 }
-    public static void printGraph(Vertex graph){
-        Vertex temp=graph;
+    public void printGraph(){
+        Vertex temp=this;
         temp=temp.next;
         while(temp!=null){
             System.out.print(temp.vertex+": ");
@@ -72,8 +72,8 @@ public static int findId(Vertex G,String name){
         }
     }
 
-    public static Vertex deleteVertex(Vertex graph,String vertex,Matrix M){
-        Vertex temp=graph;
+    public Vertex deleteVertex(String vertex,Matrix M){
+        Vertex temp=this;
         temp = temp.next;
         Vertex last=null;
         int count = 1;
@@ -81,8 +81,8 @@ public static int findId(Vertex G,String name){
             if (temp.vertex.equals(vertex)) {
                 if (last != null)
                     last.next = temp.next;
-                else graph.next = temp.next;
-                Matrix.deleteVertInMx(M,count);
+                else this.next = temp.next;
+                M.deleteVertInMx(count);
             }
             else if(temp.adjVertexes!=null) {
                 for (int i = 0; i < temp.adjVertexes.length; i++) {
@@ -105,16 +105,16 @@ public static int findId(Vertex G,String name){
 
                 }
             }
-            if(graph!=temp.next)
+            if(this!=temp.next)
             last=temp;
             temp=temp.next;
             count++;
         }
-        return graph;
+        return this;
     }
-    public static boolean addVertex(Vertex G, String name,String adjVert){
-        if(findVertex(G,name)!=null) return false;
-        Vertex temp=G;
+    public boolean addVertex(String name,String adjVert){
+        if(this.findVertex(name)!=null) return false;
+        Vertex temp=this;
         String[] adj = adjVert.trim().split(" ");
         Vertex[] tmp = new Vertex[adj.length];
         Vertex newVert = new Vertex(name,null,null,null);
@@ -149,8 +149,8 @@ public static int findId(Vertex G,String name){
         last.next=newVert;
         return true;
     }
-    public static Vertex addVertex(Vertex G, String name,Vertex adjVert[]){
-        Vertex tmp = G;
+    public Vertex addVertex(String name,Vertex adjVert[]){
+        Vertex tmp = this;
         while(tmp.next!=null){
             tmp=tmp.next;
         }
@@ -158,8 +158,8 @@ public static int findId(Vertex G,String name){
         tmp.setNext(newVert);
         return newVert;
     }
-   public static Vertex[] stepsLoopVert(Vertex G,String name, Vertex[] visVerts){
-       Vertex tmp = G.next;
+   public Vertex[] stepsLoopVert(String name, Vertex[] visVerts){
+       Vertex tmp = this.next;
        while(tmp!=null){
            if(tmp.vertex.equals(name)) break;
            tmp=tmp.next;
@@ -181,12 +181,12 @@ public static int findId(Vertex G,String name){
            return visVerts;
        }
        for(int i=0;i<tmp.adjVertexes.length;i++){
-           visVerts=stepsLoopVert(G,tmp.adjVertexes[i].vertex,visVerts);
+           visVerts=this.stepsLoopVert(tmp.adjVertexes[i].vertex,visVerts);
        }
        return visVerts;
    }
-    public static Vertex[] stepsVert(Vertex G,String name){
-        Vertex tmp = G.next;
+    public Vertex[] stepsVert(String name){
+        Vertex tmp = this.next;
         while(tmp!=null){
             if(tmp.vertex.equals(name)) break;
             tmp=tmp.next;
@@ -199,10 +199,10 @@ public static int findId(Vertex G,String name){
             return visVerts;
         }
 
-        Stack stack = null;
-        stack = Stack.stackPush(stack,tmp);
+        Stack stack = new Stack(null,null);
+        stack = stack.stackPush(tmp);
         while(stack!=null){
-            final Stack finVert = Stack.stackPop(stack);
+            final Stack finVert = stack.stackPop();
             stack=stack.head;
             if(visVerts==null || Arrays.stream(visVerts).noneMatch(n->n.vertex.equals(finVert.vert.vertex))){
                 int k=1;
@@ -215,8 +215,11 @@ public static int findId(Vertex G,String name){
                 if(finVert.vert.adjVertexes!=null) {
                     for (int i = 0; i <finVert.vert.adjVertexes.length;i++) {
                         final Vertex vert = finVert.vert.adjVertexes[i];
-                        if(Arrays.stream(visVerts).noneMatch(n->n.vertex.equals(vert.vertex)))
-                            stack=Stack.stackPush(stack, vert);
+                        if(Arrays.stream(visVerts).noneMatch(n->n.vertex.equals(vert.vertex))){
+                            if(stack==null) stack = new Stack(null,null);
+                            stack=stack.stackPush(vert);
+                        }
+
                     }
                 }
             }

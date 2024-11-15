@@ -13,52 +13,53 @@ public class Stack {
         this.index=index;
         this.next=next;
     }
-    public static Stack stackPop(Stack stack){
-        if(stack == null) {
-            return null;
+    public  Stack stackPop(){
+        if(this.next == null) {
+            this.head=null;
+            return this;
         }
-        if(stack.next == null) {
-            stack.head=null;
-            return stack;
+        else {
+            this.head=this.next;
+            return this;
         }
 
-        Stack temp = stack;
-        while(temp.next.next != null){
-            temp = temp.next;
-        }
-        Stack returnTmp = temp.next;
-        temp.next = null;
-        stack.head = temp;
-        return returnTmp;
+//        Stack temp = this;
+//        while(temp.next.next != null){
+//            temp = temp.next;
+//        }
+//        Stack returnTmp = temp.next;
+//        temp.next = null;
+//        this.head = temp;
+       // return returnTmp;
     }
-    public static Stack stackPush(Stack stack, Vertex vert){
-        if(stack == null) {
+    public Stack stackPush(Vertex vert){
+        if(this.vert == null) {
             Stack temp = new Stack(vert, null);
             temp.head = temp;
             return temp;
         }
-        Stack temp = stack;
+        Stack temp = this;
         temp.head = temp;
         while(temp.next != null){
             temp = temp.next;
         }
         Stack tmpStack = new Stack(vert,null);
         temp.next = tmpStack;
-        return stack;
+        return this;
     }
-    public static Stack stackPush(Stack stack, int index){
-        if(stack == null) {
+    public  Stack stackPush(int index){
+        if(this.index == 0) {
             Stack temp = new Stack(index, null);
             temp.head = temp;
             return temp;
         }
-        Stack temp = stack;
+        Stack temp = this;
         temp.head = temp;
         while(temp.next != null){
             temp = temp.next;
         }
         Stack tmpStack = new Stack(index,null);
         temp.next = tmpStack;
-        return stack;
+        return this;
     }
 }
