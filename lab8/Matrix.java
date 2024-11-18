@@ -212,6 +212,42 @@ public class Matrix {
         }
         return visVerts;
     }
+    public int[] BFSMatWithMyQueue(int vert){
+        if(vert>this.size)return null;
+
+        int[] visVerts=null;
+        int k=0;
+
+        for(int i=0;i<this.size;i++){
+            if(this.matrix[vert-1][i]==1) k++;
+        }
+        if(k==0){
+            visVerts=new int[1];
+            visVerts[0]=vert;
+            return visVerts;
+        }
+        MyQueue libQueue = new MyQueue(0,null);
+        libQueue=libQueue.queuePush(vert);
+        visVerts=new int[1];
+        visVerts[0]=vert;
+
+        while(libQueue!=null){
+            int newVert = libQueue.queuePop().index;
+            libQueue=libQueue.head;
+            for(int i=0;i<this.size;i++){
+                final int vertex = i+1;
+                if(this.matrix[newVert-1][i]==1 && Arrays.stream(visVerts).noneMatch(n->n==vertex)){
+                    if(libQueue==null) libQueue = new MyQueue(0,null);
+                    libQueue = libQueue.queuePush(vertex);
+                    int[] tempVerts =new int[visVerts.length+1];
+                    tempVerts = Arrays.copyOf(visVerts, visVerts.length+1);
+                    tempVerts[visVerts.length]=vertex;
+                    visVerts=tempVerts;
+                }
+            }
+        }
+        return visVerts;
+    }
     public int getSize(){
         return size;
     }

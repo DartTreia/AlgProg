@@ -70,12 +70,12 @@ public class Menu {
                     }
                     break;
                 case 7:
-
-                    break;
-                case 8:
                     System.out.print("Write down the number of vertex which will be start: ");
                     int name8 = sc.nextInt();
-                    System.out.println(Arrays.toString(M.DFSMat(name8)));
+                    System.out.println(Arrays.toString(M.BFSMatWithMyQueue(name8)));
+                    break;
+                case 8:
+
                     break;
                 case 9:
                     Runtime.getRuntime().exit(0);
