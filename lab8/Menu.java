@@ -50,11 +50,14 @@ public class Menu {
                     G.deleteVertex(newName2, M);
                     break;
                 case 5:
+                    M.printMatrix(G);
                     System.out.print("Write down the number of vertex which will be start: ");
                     int name7 = sc.nextInt();
                     System.out.println(Arrays.toString(M.BFSMatWithLibQueue(name7)));
                     break;
                 case 6:
+                    System.out.println(" G");
+                    G.printGraph();
                     System.out.print("Write down the name of vertex which will be start: ");
                     String name2 = sc.next();
                     Vertex[] temp2 = null;
@@ -70,12 +73,30 @@ public class Menu {
                     }
                     break;
                 case 7:
+                    M.printMatrix(G);
                     System.out.print("Write down the number of vertex which will be start: ");
                     int name8 = sc.nextInt();
                     System.out.println(Arrays.toString(M.BFSMatWithMyQueue(name8)));
                     break;
                 case 8:
+                    M.printMatrix(G);
 
+                    System.out.print("Write down the number of vertex which will be start: ");
+                    int name9 = sc.nextInt();
+
+                    long startTime = System.nanoTime();
+                    int[] arr = M.BFSMatWithLibQueue(name9);
+                    long endTime = System.nanoTime();
+                    long duration = (endTime - startTime);
+
+                    System.out.println("Library queue: "+Arrays.toString(arr)+ "  Time spent: "+duration/1000000+" ms");
+
+                    startTime = System.nanoTime();
+                    arr = M.BFSMatWithMyQueue(name9);
+                    endTime = System.nanoTime();
+                    duration = (endTime - startTime);
+
+                    System.out.println("My queue: "+Arrays.toString(arr)+ "  Time spent: "+duration/1000000+" ms");
                     break;
                 case 9:
                     Runtime.getRuntime().exit(0);

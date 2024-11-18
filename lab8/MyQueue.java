@@ -13,7 +13,7 @@ public class MyQueue {
         this.index=index;
         this.next=next;
     }
-    public MyQueue QueuePop(){
+    public MyQueue queuePop(){
         if(this.next == null) {
             this.head=null;
             return this;
@@ -23,7 +23,7 @@ public class MyQueue {
             return this;
         }
     }
-    public MyQueue QueuePush(Vertex vert){
+    public MyQueue queuePush(Vertex vert){
         if(this.vert == null) {
             MyQueue temp = new MyQueue(vert, null);
             temp.head = temp;
@@ -38,8 +38,8 @@ public class MyQueue {
         temp.next = tmpQueue;
         return this;
     }
-    public MyQueue QueuePush(int index){
-        if(this.index == 0) {
+    public MyQueue queuePush(int index){
+        if(this!=null && this.index == 0) {
             MyQueue temp = new MyQueue(index, null);
             temp.head = temp;
             return temp;
