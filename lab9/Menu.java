@@ -20,11 +20,12 @@ public class Menu {
             System.out.println("2. Show graph");
             System.out.println("3. Add vertex");
             System.out.println("4. Delete vertex");
-            System.out.println("5. BFS for matrix");
-            System.out.println("6. BFS for incident list");
-            System.out.println("7. BFS with non-library queue");
-            System.out.println("8. Compare time of library queue func ant non-library queue");
-            System.out.println("9. Exit");
+            System.out.println("5. BFS dist for matrix");
+            System.out.println("6. DFS for incident list");
+            System.out.println("7. BFS dist for incident list");
+            System.out.println("8. DFS dist for incident list");
+            System.out.println("9. Time compare DFS and BFS");
+            System.out.println("10. Exit");
             int choice = sc.nextInt();
             clearConsole();
             switch (choice) {
@@ -56,36 +57,45 @@ public class Menu {
                     System.out.println(Arrays.toString(M.DISTMatWithLibQueue(name7)));
                     break;
                 case 6:
-                    System.out.println(" G");
-                    G.printGraph();
                     M.printMatrix(G);
                     System.out.print("Write down the number of vertex which will be start: ");
+                    int name2 = sc.nextInt();
+                    System.out.println(Arrays.toString(M.DistDFSMat(name2)));
+                    break;
+                case 7:
+                    System.out.println(" G");
+                    G.printGraph();
+                    System.out.print("Write down the name of vertex which will be start: ");
                     String name1 = sc.next();
                     System.out.println(Arrays.toString(G.DISTVertsLibQueue(name1)));
                     break;
-                case 7:
-
-                    break;
                 case 8:
-                    M.printMatrix(G);
-
-                    System.out.print("Write down the number of vertex which will be start: ");
-                    int name9 = sc.nextInt();
-
-                    long startTime = System.nanoTime();
-                    int[] arr = M.BFSMatWithLibQueue(name9);
-                    long endTime = System.nanoTime();
-                    long duration = (endTime - startTime);
-
-                    System.out.println("Library queue: "+Arrays.toString(arr)+ "  Time spent: "+duration/1000000+" ms");
-
-                    startTime = System.nanoTime();
-                    endTime = System.nanoTime();
-                    duration = (endTime - startTime);
-
-                    System.out.println("My queue: "+Arrays.toString(arr)+ "  Time spent: "+duration/1000000+" ms");
+                    System.out.println(" G");
+                    G.printGraph();
+                    System.out.print("Write down the name of vertex which will be start: ");
+                    String name3 = sc.next();
+                    System.out.println(Arrays.toString(G.DistDFSVert(name3)));
                     break;
                 case 9:
+                    M.printMatrix(G);
+                    System.out.print("Write down the number of vertex which will be start: ");
+                    int name4 = sc.nextInt();
+
+                    long start = System.nanoTime();
+                    int[] arr = M.DISTMatWithLibQueue(name4);
+                    long end = System.nanoTime();
+                    long duration = end - start;
+
+                    System.out.println("(BFS) "+Arrays.toString(arr) + " Time spent: " + duration/1000000 + "ms");
+
+                    start = System.nanoTime();
+                    arr = M.DistDFSMat(name4);
+                    end = System.nanoTime();
+                    duration = end - start;
+
+                    System.out.println("(DFS) "+Arrays.toString(arr) + " Time spent: " + duration/1000000 + "ms");
+                    break;
+                case 10:
                     Runtime.getRuntime().exit(0);
                     break;
                 default:

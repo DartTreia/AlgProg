@@ -107,31 +107,6 @@ public class Matrix {
         this.size++;
         this.matrix = tmp2;
     }
-    public int[] DFSloop(int vert, int[] visVerts){
-        if(vert>this.size)return null;
-        if(visVerts!=null && Arrays.stream(visVerts).anyMatch(n->n==vert)) {
-            return visVerts;
-        }else{
-            int k=1;
-            if(visVerts!=null) k+=visVerts.length;
-            int[] temp = new int[k];
-            if(visVerts!=null) temp=Arrays.copyOf(visVerts, k);
-            temp[k-1]=vert;
-            visVerts=temp;
-        }
-        int k=0;
-        for(int i=0;i<this.size;i++){
-            if(this.matrix[vert-1][i]==1) k++;
-        }
-        if(k==0) return visVerts;
-        for(int i=0;i<this.size;i++){
-            if(k>0 && this.matrix[vert-1][i]==1) {
-                visVerts = this.DFSloop(i+1, visVerts);
-                k--;
-            }
-        }
-        return visVerts;
-    }
     public int[] DFSMat(int vert){
         if(vert>this.size)return null;
         int[] visVerts=null;
@@ -244,6 +219,57 @@ public class Matrix {
                 }
             }
         }
+        return dists;
+    }
+    public int[] DistDFSMat(int vert){
+        int[] dists = new int[this.size];
+        Arrays.fill(dists, 0);
+
+        if(vert>this.size)return dists;
+        int[] visVerts=null;
+        int k=0;
+        for(int i=0;i<this.size;i++){
+            if(this.matrix[vert-1][i]==1) k++;
+        }
+        if(k==0) return dists;
+        k=-1;
+        Stack stack = new Stack(0,null);
+        stack = stack.stackPush(vert);
+        while(stack!=null){
+            Stack temp = stack.stackPop();
+            k++;
+            stack=stack.head;
+            if(visVerts==null || Arrays.stream(visVerts).noneMatch(n->n==temp.index)){
+                if(dists[temp.index-1]==0) {
+                    dists[temp.index-1]=k;
+                }
+
+                int k2=1;
+                if(visVerts!=null) k2+=visVerts.length;
+                int[] tempVerts =new int[k2];
+                if(visVerts!=null) tempVerts = Arrays.copyOf(visVerts, k2);
+                tempVerts[k2-1]=temp.index;
+                visVerts=tempVerts;
+                int count=0;
+                for(int i=0;i<this.size;i++){
+                    if(this.matrix[temp.index-1][i]==1) count++;
+                }
+                if(count!=0){
+                    for (int i = 0; i < this.size;i++) {
+                        if(count>0 && this.matrix[temp.index-1][i]==1) {
+                            int vertex = i+1;
+                            if (Arrays.stream(visVerts).noneMatch(n -> n==vertex)){
+                                if(stack==null) stack = new Stack(0,null);
+                                stack = stack.stackPush(vertex);
+                            }
+
+                            count--;
+                        }
+                    }
+                }
+            }
+        }
+
         return dists;
     }
     public int getSize(){

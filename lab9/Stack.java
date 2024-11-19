@@ -25,7 +25,6 @@ public class Stack {
         }
         Stack returnTmp = temp.next;
         temp.next = null;
-        this.head = temp;
         return returnTmp;
     }
     public Stack stackPush(Vertex vert){

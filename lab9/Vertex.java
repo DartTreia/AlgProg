@@ -267,6 +267,7 @@ public int findId(String name){
     }
     public int[] DISTVertsLibQueue(String name){
         Vertex tmp = this.next;
+
         int k=0;
         while(tmp!=null){
             tmp=tmp.next;
@@ -274,6 +275,7 @@ public int findId(String name){
         }
         int[] dists=new int[k];
         Arrays.fill(dists,0);
+
         tmp = this.next;
         while(tmp!=null){
             if(tmp.vertex.equals(name)) break;
@@ -305,6 +307,58 @@ public int findId(String name){
                 }
             }
         }
+        return dists;
+    }
+    public int[] DistDFSVert(String name){
+        Vertex tmp = this.next;
+
+        int k=0;
+        while(tmp!=null){
+            tmp=tmp.next;
+            k++;
+        }
+        int[] dists=new int[k];
+        Arrays.fill(dists,0);
+
+        tmp=this.next;
+        while(tmp!=null){
+            if(tmp.vertex.equals(name)) break;
+            tmp=tmp.next;
+        }
+        if(tmp==null){return dists;}
+        Vertex[] visVerts=null;
+        if(tmp.adjVertexes==null) return dists;
+        k=-1;
+        Stack stack = new Stack(null,null);
+        stack = stack.stackPush(tmp);
+        while(stack!=null){
+            final Stack finVert = stack.stackPop();
+            k++;
+            stack=stack.head;
+            if(visVerts==null || Arrays.stream(visVerts).noneMatch(n->n.vertex.equals(finVert.vert.vertex))){
+                if(dists[Integer.parseInt(finVert.vert.vertex.substring(1))-1]==0)
+                    dists[Integer.parseInt(finVert.vert.vertex.substring(1))-1]=k;
+
+                int k2=1;
+                if(visVerts!=null) k2+=visVerts.length;
+                Vertex[] tempVerts =new Vertex[k2];
+                if(visVerts!=null) tempVerts = Arrays.copyOf(visVerts, k2);
+                tempVerts[k2-1]=finVert.vert;
+                visVerts=tempVerts;
+
+                if(finVert.vert.adjVertexes!=null) {
+                    for (int i = 0; i <finVert.vert.adjVertexes.length;i++) {
+                        final Vertex vert = finVert.vert.adjVertexes[i];
+                        if(Arrays.stream(visVerts).noneMatch(n->n.vertex.equals(vert.vertex))){
+                            if(stack==null) stack = new Stack(null,null);
+                            stack=stack.stackPush(vert);
+                        }
+
+                    }
+                }
+            }
+        }
+
         return dists;
     }
     public String getVertex() {
