@@ -4,6 +4,7 @@ import java.util.Scanner;
 public class Menu {
     private Matrix M;
     private Vertex G;
+
     public Menu(Matrix M,Vertex G){
         this.M = M;
         this.G = G;
@@ -21,7 +22,7 @@ public class Menu {
             System.out.println("3. Add vertex");
             System.out.println("4. Delete vertex");
             System.out.println("5. BFS dist for matrix");
-            System.out.println("6. DFS for incident list");
+            System.out.println("6. DFS dist for matrix");
             System.out.println("7. BFS dist for incident list");
             System.out.println("8. DFS dist for incident list");
             System.out.println("9. Time compare DFS and BFS");
@@ -54,13 +55,29 @@ public class Menu {
                     M.printMatrix(G);
                     System.out.print("Write down the number of vertex which will be start: ");
                     int name7 = sc.nextInt();
-                    System.out.println(Arrays.toString(M.DISTMatWithLibQueue(name7)));
+                    int[] sizes = M.DISTMatWithLibQueue(name7);
+                    System.out.println(Arrays.toString(sizes));
+                    int k =0;
+                    int max = Arrays.stream(sizes).max().getAsInt();
+                    System.out.print("Vertexes on "+k+" level: ");
+                    for(int i = 0; i < sizes.length; i++){
+                        if(sizes[i]==k){
+                            System.out.print(i+1+" ");
+                        }
+                        if(i==sizes.length-1 && k!=max){
+                            k++;
+                            System.out.print("\nVertexes on "+k+" level: ");
+                            i=-1;
+                        }
+                    }
                     break;
                 case 6:
+                    Arrays.fill(M.distVerts,0);
                     M.printMatrix(G);
                     System.out.print("Write down the number of vertex which will be start: ");
                     int name2 = sc.nextInt();
-                    System.out.println(Arrays.toString(M.DistDFSMat(name2)));
+                    M.DistDFSMat(name2,new int[0],0);
+                    System.out.println(Arrays.toString(M.distVerts));
                     break;
                 case 7:
                     System.out.println(" G");
@@ -77,6 +94,7 @@ public class Menu {
                     System.out.println(Arrays.toString(G.DistDFSVert(name3)));
                     break;
                 case 9:
+                    Arrays.fill(M.distVerts,0);
                     M.printMatrix(G);
                     System.out.print("Write down the number of vertex which will be start: ");
                     int name4 = sc.nextInt();
@@ -86,14 +104,16 @@ public class Menu {
                     long end = System.nanoTime();
                     long duration = end - start;
 
-                    System.out.println("(BFS) "+Arrays.toString(arr) + " Time spent: " + duration/1000000 + "ms");
+                    System.out.println("(BFS)\n"+Arrays.toString(arr) + " Time spent: " + duration/1000000 + "ms");
 
+                    System.out.println("(DFS)");
                     start = System.nanoTime();
-                    arr = M.DistDFSMat(name4);
+                    //M.DistDFSMat(name4,new int[0],0);
+                    M.DFS(name4,new boolean[M.getSize()],0);
                     end = System.nanoTime();
                     duration = end - start;
-
-                    System.out.println("(DFS) "+Arrays.toString(arr) + " Time spent: " + duration/1000000 + "ms");
+                    System.out.print(Arrays.toString(M.distVerts));
+                    System.out.println(" Time spent: " + duration/1000000 + "ms");
                     break;
                 case 10:
                     Runtime.getRuntime().exit(0);

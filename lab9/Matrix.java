@@ -1,14 +1,20 @@
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class Matrix {
+    public int[] distVerts;
     private int[][] matrix;
     private int size;
+    public boolean[] visVerts;
+
     public Matrix(int size){
         this.size = size;
         matrix = new int[size][size];
         createMatrix();
+        visVerts = new boolean[size];
+        Arrays.fill(visVerts, false);
     }
 
     public void createMatrix(){
@@ -19,6 +25,7 @@ public class Matrix {
                 if(j==i) this.matrix[i][i]=0;
             }
         }
+        distVerts = new int[this.size];
     }
 
     public void printMatrix(Vertex G){
@@ -221,57 +228,55 @@ public class Matrix {
         }
         return dists;
     }
-    public int[] DistDFSMat(int vert){
-        int[] dists = new int[this.size];
-        Arrays.fill(dists, 0);
-
-        if(vert>this.size)return dists;
-        int[] visVerts=null;
+    public int[] DistDFSMat(int vert, int[] visVerts,int length){
+        length++;
+        if(vert>this.size)return visVerts;
+        if(visVerts!=null && Arrays.stream(visVerts).anyMatch(n->n==vert)) {
+            if(this.distVerts[vert-1]>length-1 || this.distVerts[vert-1]==0)
+                this.distVerts[vert-1]=length-1;
+        }else{
+            int k=1;
+            if(visVerts!=null) k+=visVerts.length;
+            int[] temp = new int[k];
+            if(visVerts!=null) temp=Arrays.copyOf(visVerts, k);
+            temp[k-1]=vert;
+            visVerts=temp;
+        }
         int k=0;
         for(int i=0;i<this.size;i++){
             if(this.matrix[vert-1][i]==1) k++;
         }
-        if(k==0) return dists;
-        k=-1;
-        Stack stack = new Stack(0,null);
-        stack = stack.stackPush(vert);
-        while(stack!=null){
-            Stack temp = stack.stackPop();
-            k++;
-            stack=stack.head;
-            if(visVerts==null || Arrays.stream(visVerts).noneMatch(n->n==temp.index)){
-                if(dists[temp.index-1]==0) {
-                    dists[temp.index-1]=k;
-                }
-
-                int k2=1;
-                if(visVerts!=null) k2+=visVerts.length;
-                int[] tempVerts =new int[k2];
-                if(visVerts!=null) tempVerts = Arrays.copyOf(visVerts, k2);
-                tempVerts[k2-1]=temp.index;
-                visVerts=tempVerts;
-                int count=0;
-                for(int i=0;i<this.size;i++){
-                    if(this.matrix[temp.index-1][i]==1) count++;
-                }
-                if(count!=0){
-                    for (int i = 0; i < this.size;i++) {
-                        if(count>0 && this.matrix[temp.index-1][i]==1) {
-                            int vertex = i+1;
-                            if (Arrays.stream(visVerts).noneMatch(n -> n==vertex)){
-                                if(stack==null) stack = new Stack(0,null);
-                                stack = stack.stackPush(vertex);
-                            }
-
-                            count--;
-                        }
-                    }
-                }
+        if(k==0){
+            if(this.distVerts[vert-1]>length-1 || this.distVerts[vert-1]==0)
+                this.distVerts[vert-1]=length-1;
+            return visVerts;
+        }
+        for(int i=0;i<this.size;i++){
+            if(this.matrix[vert-1][i]==1) {
+                visVerts = this.DistDFSMat(i+1, visVerts,length);
             }
         }
-
-        return dists;
+        if(this.distVerts[vert-1]>length-1 || this.distVerts[vert-1]==0)
+            this.distVerts[vert-1]=length-1;
+        return visVerts;
     }
+
+    public void DFS(int vert,boolean[] visVerts,int length){
+        visVerts[vert-1]=true;
+        for(int i=0;i<this.size;i++){
+            if(!visVerts[i] && this.matrix[vert-1][i]==1){
+                visVerts[i] = true;
+
+                if(this.distVerts[i]>length+1 || this.distVerts[i]==0)
+                    this.distVerts[i]=length+1;
+
+                boolean[] temp = Arrays.copyOf(visVerts, visVerts.length);
+
+                this.DFS(i+1,temp,length+1);
+            }
+        }
+    }
+
     public int getSize(){
         return size;
     }
