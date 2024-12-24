@@ -86,32 +86,27 @@ public class Matrix {
 
     public int[] findDists(int vert){
         int[] dists = new int[this.size];
-        Arrays.fill(dists, 0);
+        Arrays.fill(dists, Integer.MAX_VALUE);
 
         if(vert>this.size)return dists;
 
-        int[] visVerts=null;
         int k=0;
 
         for(int i=0;i<this.size;i++){
             if(this.matrix[vert-1][i]!=0) k++;
         }
+
         if(k==0) return dists;
+
         Queue<Integer> libQueue = new LinkedList<Integer>();
         libQueue.add(vert);
-        visVerts=new int[1];
-        visVerts[0]=vert;
 
         while(!libQueue.isEmpty()){
             int newVert = libQueue.poll();
             for(int i=0;i<this.size;i++){
                 final int vertex = i+1;
-                if(this.matrix[newVert-1][i]!=0 && this.matrix[newVert-1][i]!=-1 && Arrays.stream(visVerts).noneMatch(n->n==vertex)){
+                if(this.matrix[newVert-1][i]>0 && dists[i]>dists[newVert-1]+this.matrix[newVert-1][i]){
                     libQueue.add(vertex);
-                    int[] tempVerts =new int[visVerts.length+1];
-                    tempVerts = Arrays.copyOf(visVerts, visVerts.length+1);
-                    tempVerts[visVerts.length]=vertex;
-                    visVerts=tempVerts;
                     dists[i]=dists[newVert-1]+this.matrix[newVert-1][i];
                 }
             }
